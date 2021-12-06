@@ -2,9 +2,14 @@ import styled, { css } from "styled-components/native";
 import { RFValue } from "react-native-responsive-fontsize";
 
 export const Container = styled.View`
-  padding: 30px 8px;
+  height: ${RFValue(82)}px;
+  padding: 8px;
   border-top-width: 1px;
   border-top-color: ${({ theme }) => theme.colors.border_dark};
+  margin-top: auto;
+
+  align-items: center;
+  justify-content: center;
 `;
 
 export const Copyright = styled.Text`

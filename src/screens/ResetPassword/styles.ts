@@ -4,9 +4,12 @@ import { Platform } from "react-native";
 
 export const Container = styled.ScrollView.attrs({
   showsVerticalScrollIndicator: false,
+  contentContainerStyle: {
+    justifyContent: "space-between",
+    flexGrow: 1,
+  },
 })`
   background: ${({ theme }) => theme.colors.background_primary};
-  flex: 1;
 `;
 
 export const Content = styled.View`
