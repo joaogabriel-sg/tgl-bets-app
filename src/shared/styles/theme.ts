@@ -1,7 +1,9 @@
 export const theme = {
   fonts: {
-    primary_400: "Roboto_400Regular",
-    primary_700: "Roboto_700Bold",
+    primary_400_regular: "Roboto_400Regular",
+    primary_400_italic: "Roboto_400Regular_Italic",
+    primary_700_regular: "Roboto_700Bold",
+    primary_700_italic: "Roboto_700Bold_Italic",
   },
   colors: {
     background_primary: "#f7f7f7",
