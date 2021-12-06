@@ -1,12 +1,32 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import { ScrollView } from "react-native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import { AuthHeader, Button, Footer, InputForm } from "../../components";
 
+import { RootStackParamList } from "../../routes";
+
 import * as S from "./styles";
 
-export function ResetPassword() {
+type Props = NativeStackScreenProps<RootStackParamList, "Authentication">;
+
+export function ResetPassword({ navigation }: Props) {
+  const containerRef = useRef<ScrollView>(null);
+
+  function handleGoBack() {
+    navigation.goBack();
+  }
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      containerRef.current?.scrollTo({ animated: false, x: 0, y: 0 });
+    });
+
+    return unsubscribe;
+  }, []);
+
   return (
-    <S.Container>
+    <S.Container ref={containerRef}>
       <S.Content>
         <AuthHeader screenTitle="Reset Password" />
 
@@ -16,7 +36,7 @@ export function ResetPassword() {
           <Button isPrimary title="Send link" />
         </S.Form>
 
-        <Button title="Back" arrowPosition="left" />
+        <Button title="Back" arrowPosition="left" onPress={handleGoBack} />
       </S.Content>
 
       <Footer />
