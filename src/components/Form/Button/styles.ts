@@ -22,6 +22,7 @@ export const Button = styled.TouchableOpacity`
 
 export const Title = styled.Text<Props>`
   ${({ theme, isPrimary }) => css`
+    margin: 0 16px;
     font-family: ${theme.fonts.primary_700_italic};
     font-size: ${RFValue(28)}px;
     color: ${isPrimary ? theme.colors.primary : theme.colors.text_700};
@@ -29,7 +30,6 @@ export const Title = styled.Text<Props>`
 `;
 
 export const Icon = styled(Feather)<Props>`
-  margin-left: 16px;
   font-size: ${RFValue(24)}px;
   color: ${({ theme, isPrimary }) =>
     isPrimary ? theme.colors.primary : theme.colors.text_700};
