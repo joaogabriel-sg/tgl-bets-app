@@ -2,7 +2,9 @@ import styled, { css } from "styled-components/native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { Platform } from "react-native";
 
-export const Container = styled.ScrollView`
+export const Container = styled.ScrollView.attrs({
+  showsVerticalScrollIndicator: false,
+})`
   background: ${({ theme }) => theme.colors.background_primary};
   flex: 1;
 `;
