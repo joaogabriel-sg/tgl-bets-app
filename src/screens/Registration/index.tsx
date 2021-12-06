@@ -1,12 +1,6 @@
 import React from "react";
 
-import {
-  AuthHeader,
-  Button,
-  Footer,
-  HelperButton,
-  InputForm,
-} from "../../components";
+import { AuthHeader, Button, Footer, InputForm } from "../../components";
 
 import * as S from "./styles";
 
