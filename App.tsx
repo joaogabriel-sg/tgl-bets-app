@@ -9,7 +9,7 @@ import {
 } from "@expo-google-fonts/roboto";
 import { ThemeProvider } from "styled-components";
 
-import { Registration } from "./src/screens";
+import { ResetPassword } from "./src/screens";
 
 import { theme } from "./src/shared/styles";
 
@@ -25,7 +25,7 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Registration />
+      <ResetPassword />
     </ThemeProvider>
   );
 }
