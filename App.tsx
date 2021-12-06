@@ -1,5 +1,4 @@
 import React from "react";
-import { Text, View } from "react-native";
 import AppLoading from "expo-app-loading";
 import {
   useFonts,
@@ -9,6 +8,8 @@ import {
   Roboto_700Bold_Italic,
 } from "@expo-google-fonts/roboto";
 import { ThemeProvider } from "styled-components";
+
+import { Authentication } from "./src/screens";
 
 import { theme } from "./src/shared/styles";
 
@@ -24,9 +25,7 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <View>
-        <Text>TGL Bets</Text>
-      </View>
+      <Authentication />
     </ThemeProvider>
   );
 }
