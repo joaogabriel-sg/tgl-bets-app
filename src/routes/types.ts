@@ -4,4 +4,10 @@ type AuthStackParamList = {
   ResetPassword: undefined;
 };
 
-export type RootStackParamList = AuthStackParamList;
+type AppStackParamList = {
+  Account: undefined;
+  Home: undefined;
+  NewBet: undefined;
+};
+
+export type RootStackParamList = AuthStackParamList & AppStackParamList;
