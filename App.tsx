@@ -7,9 +7,12 @@ import {
   Roboto_700Bold,
   Roboto_700Bold_Italic,
 } from "@expo-google-fonts/roboto";
+import { Provider } from "react-redux";
 import { ThemeProvider } from "styled-components";
 
 import { Routes } from "./src/routes";
+
+import { store } from "./src/store";
 
 import { theme } from "./src/shared/styles";
 
@@ -24,8 +27,10 @@ export default function App() {
   if (!fontsLoaded) return <AppLoading />;
 
   return (
-    <ThemeProvider theme={theme}>
-      <Routes />
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <Routes />
+      </ThemeProvider>
+    </Provider>
   );
 }
