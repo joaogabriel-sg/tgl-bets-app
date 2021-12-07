@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { ScrollView, TextInput } from "react-native";
+import { Alert, ScrollView, TextInput } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -14,6 +14,10 @@ import {
 } from "../../components";
 
 import { RootStackParamList } from "../../routes";
+
+import { useReduxDispatch } from "../../shared/hooks";
+
+import { loginUser } from "../../store/slices/auth/actions";
 
 import * as S from "./styles";
 
@@ -43,6 +47,8 @@ export function Authentication({ navigation }: Props) {
   const containerRef = useRef<ScrollView>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
+  const dispatch = useReduxDispatch();
+
   const {
     control,
     formState: { errors },
@@ -60,8 +66,13 @@ export function Authentication({ navigation }: Props) {
     navigation.navigate("Registration");
   }
 
-  function handleAuthenticate(data: FormData) {
-    reset();
+  async function handleAuthenticate(data: FormData) {
+    try {
+      await dispatch(loginUser(data)).unwrap();
+      reset();
+    } catch (err: any) {
+      Alert.alert(err.message, "", [{ text: "Okay" }]);
+    }
   }
 
   useEffect(() => {
