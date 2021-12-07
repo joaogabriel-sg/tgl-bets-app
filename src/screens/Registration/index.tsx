@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { ScrollView, TextInput } from "react-native";
+import { Alert, ScrollView, TextInput } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -8,6 +8,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { AuthHeader, Button, Footer, InputForm } from "../../components";
 
 import { RootStackParamList } from "../../routes";
+
+import { useReduxDispatch } from "../../shared/hooks";
+
+import { createNewUser } from "../../store/slices/auth/actions";
 
 import * as S from "./styles";
 
@@ -40,6 +44,8 @@ export function Registration({ navigation }: Props) {
   const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
+  const dispatch = useReduxDispatch();
+
   const {
     control,
     formState: { errors },
@@ -53,8 +59,13 @@ export function Registration({ navigation }: Props) {
     navigation.goBack();
   }
 
-  function handleRegisterNewUser(data: FormData) {
-    reset();
+  async function handleRegisterNewUser(data: FormData) {
+    try {
+      await dispatch(createNewUser(data)).unwrap();
+      reset();
+    } catch (err: any) {
+      Alert.alert(err.message, "", [{ text: "Okay" }]);
+    }
   }
 
   useEffect(() => {
