@@ -12,6 +12,7 @@ export const ScreenTitle = styled.Text`
     font-family: ${theme.fonts.primary_700_italic};
     font-size: ${RFValue(24)}px;
     color: ${theme.colors.text_700};
+    text-transform: uppercase;
   `}
 `;
 
