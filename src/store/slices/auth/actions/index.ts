@@ -3,7 +3,7 @@ import axios, { AxiosError } from "axios";
 
 import { api } from "../../../../shared/services";
 
-import { authenticate, IApiUser } from "../index";
+import { authenticate, IApiUser, logout } from "../index";
 
 import { AppDispatch, ReduxStore } from "../../../types";
 
@@ -42,6 +42,9 @@ export const createNewUser = createAsyncThunk<void, INewUser, AsyncThunkConfig>(
       };
 
       thunkApi.dispatch(authenticate(createdNewUser));
+      api.defaults.headers.common = {
+        Authorization: `Bearer ${createdNewUser.token.token}`,
+      };
     } catch (error) {
       let errorMessage = "Something went wrong, please contact our support!";
 
@@ -75,6 +78,9 @@ export const loginUser = createAsyncThunk<void, ILoginData, AsyncThunkConfig>(
       };
 
       thunkApi.dispatch(authenticate(userData));
+      api.defaults.headers.common = {
+        Authorization: `Bearer ${userData.token.token}`,
+      };
     } catch (error: any) {
       let errorMessage = "Something went wrong, please contact our support!";
 
@@ -85,5 +91,16 @@ export const loginUser = createAsyncThunk<void, ILoginData, AsyncThunkConfig>(
       }
       throw new Error(errorMessage);
     }
+  }
+);
+
+export const logoutUser = createAsyncThunk<void, void, AsyncThunkConfig>(
+  "@auth/logoutUser",
+  async (_, thunkApi) => {
+    api.defaults.headers.common = {
+      Authorization: "",
+    };
+
+    thunkApi.dispatch(logout());
   }
 );
