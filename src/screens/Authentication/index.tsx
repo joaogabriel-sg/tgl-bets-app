@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Alert, ScrollView, TextInput } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useForm } from "react-hook-form";
@@ -11,6 +11,7 @@ import {
   Footer,
   HelperButton,
   InputForm,
+  Loading,
 } from "../../components";
 
 import { RootStackParamList } from "../../routes";
@@ -44,6 +45,8 @@ const schema = yup.object().shape({
 });
 
 export function Authentication({ navigation }: Props) {
+  const [isLoading, setIsLoading] = useState(false);
+
   const containerRef = useRef<ScrollView>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
@@ -53,7 +56,6 @@ export function Authentication({ navigation }: Props) {
     control,
     formState: { errors },
     handleSubmit,
-    reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -68,11 +70,17 @@ export function Authentication({ navigation }: Props) {
 
   async function handleAuthenticate(data: FormData) {
     try {
+      setIsLoading(true);
+      await delay();
       await dispatch(loginUser(data)).unwrap();
-      reset();
     } catch (err: any) {
       Alert.alert(err.message, "", [{ text: "Okay" }]);
+      setIsLoading(false);
     }
+  }
+
+  function delay(ms = 1000) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   useEffect(() => {
@@ -84,7 +92,9 @@ export function Authentication({ navigation }: Props) {
   }, []);
 
   return (
-    <S.Container ref={containerRef}>
+    <S.Container ref={containerRef} scrollEnabled={!isLoading}>
+      {isLoading && <Loading />}
+
       <S.Content>
         <AuthHeader screenTitle="Authentication" />
 

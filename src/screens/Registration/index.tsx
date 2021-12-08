@@ -1,11 +1,17 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Alert, ScrollView, TextInput } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import { AuthHeader, Button, Footer, InputForm } from "../../components";
+import {
+  AuthHeader,
+  Button,
+  Footer,
+  InputForm,
+  Loading,
+} from "../../components";
 
 import { RootStackParamList } from "../../routes";
 
@@ -39,7 +45,13 @@ const schema = yup.object().shape({
     ),
 });
 
+function delay(ms = 1000) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export function Registration({ navigation }: Props) {
+  const [isLoading, setIsLoading] = useState(false);
+
   const containerRef = useRef<ScrollView>(null);
   const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
@@ -61,10 +73,12 @@ export function Registration({ navigation }: Props) {
 
   async function handleRegisterNewUser(data: FormData) {
     try {
+      setIsLoading(true);
+      await delay();
       await dispatch(createNewUser(data)).unwrap();
-      reset();
     } catch (err: any) {
       Alert.alert(err.message, "", [{ text: "Okay" }]);
+      setIsLoading(false);
     }
   }
 
@@ -77,7 +91,9 @@ export function Registration({ navigation }: Props) {
   }, []);
 
   return (
-    <S.Container ref={containerRef}>
+    <S.Container ref={containerRef} scrollEnabled={!isLoading}>
+      {isLoading && <Loading />}
+
       <S.Content>
         <AuthHeader screenTitle="Registration" />
 
