@@ -1,6 +1,7 @@
 import styled, { css } from "styled-components/native";
 import { RFValue } from "react-native-responsive-fontsize";
-import { FlatList, FlatListProps } from "react-native";
+import { FlatList, FlatListProps, Platform } from "react-native";
+import { RectButton } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 
 import { ITypeOfGames } from "../../store/slices/games";
@@ -189,4 +190,26 @@ export const ControlButtonText = styled.Text<ControlButtonProps>`
 export const Icon = styled(Ionicons)`
   font-size: ${RFValue(26)}px;
   color: ${({ theme }) => theme.colors.shape_light};
+`;
+
+export const OpenCartButton = styled.TouchableOpacity.attrs({
+  activeOpacity: 0.65,
+})`
+  background: ${({ theme }) => theme.colors.success};
+  width: ${RFValue(48)}px;
+  height: ${RFValue(48)}px;
+  border-radius: ${RFValue(24)}px;
+
+  align-items: center;
+  justify-content: center;
+
+  position: absolute;
+  right: ${RFValue(16)}px;
+  bottom: ${RFValue(58)}px;
+  z-index: 999;
+
+  ${Platform.OS === "android" &&
+  css`
+    elevation: 5;
+  `}
 `;

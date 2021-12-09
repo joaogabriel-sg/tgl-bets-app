@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Alert } from "react-native";
+import { Alert, Modal } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
+import { Cart } from "../Cart";
 import { AppHeader, Footer, Loading } from "../../components";
 
 import { useReduxDispatch, useReduxSelector } from "../../shared/hooks";
@@ -18,6 +19,7 @@ export function NewBet() {
   const dispatch = useReduxDispatch();
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedGame, setSelectedGame] = useState<ITypeOfGames | null>(null);
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
 
@@ -79,6 +81,14 @@ export function NewBet() {
 
   function handleClearGame() {
     setSelectedNumbers([]);
+  }
+
+  function handleOpenCart() {
+    setIsCartOpen(true);
+  }
+
+  function handleCloseCart() {
+    setIsCartOpen(false);
   }
 
   useEffect(() => {
@@ -170,6 +180,14 @@ export function NewBet() {
           </S.Content>
         </>
       )}
+
+      <Modal visible={isCartOpen} animationType="slide">
+        <Cart handleCloseCart={handleCloseCart} />
+      </Modal>
+
+      <S.OpenCartButton onPress={handleOpenCart}>
+        <S.Icon name="cart-outline" />
+      </S.OpenCartButton>
 
       <Footer />
     </S.Container>
