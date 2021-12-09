@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, Modal } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import uuid from "react-native-uuid";
 
 import { Cart } from "../Cart";
 import { AppHeader, Footer, Loading } from "../../components";
@@ -11,6 +12,7 @@ import { sortArray } from "../../shared/utils";
 import { fetchGames } from "../../store/slices/games/actions";
 import { selectGames } from "../../store/slices/games/selectors";
 import { ITypeOfGames } from "../../store/slices/games";
+import { addToCart } from "../../store/slices/cart";
 
 import * as S from "./styles";
 
@@ -63,7 +65,23 @@ export function NewBet() {
     });
   }
 
-  function handleAddToCart() {}
+  function handleAddToCart() {
+    if (!selectedGame) return;
+
+    if (selectedNumbers.length !== selectedGame.max_number) return;
+
+    const newCartGame = {
+      id: uuid.v4().toString(),
+      gameId: selectedGame.id,
+      type: selectedGame.type,
+      numbers: selectedNumbers,
+      color: selectedGame.color,
+      price: selectedGame.price,
+    };
+
+    dispatch(addToCart(newCartGame));
+    setSelectedNumbers([]);
+  }
 
   function handleCompleteGame() {
     const newNumbers: number[] = [...selectedNumbers];

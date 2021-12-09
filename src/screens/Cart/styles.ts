@@ -2,6 +2,12 @@ import styled, { css } from "styled-components/native";
 import { FlatList, FlatListProps } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 
+import { ICartGame } from "../../store/slices/cart";
+
+interface CartGameProps {
+  color: string;
+}
+
 export const Container = styled.View`
   flex: 1;
 `;
@@ -47,11 +53,63 @@ export const EmptyCartMessage = styled.Text`
   `}
 `;
 
-export const CartItems = styled(
-  FlatList as new (props: FlatListProps<any>) => FlatList<any>
+export const CartGames = styled(
+  FlatList as new (props: FlatListProps<ICartGame>) => FlatList<ICartGame>
 ).attrs({
   showsVerticalScrollIndicator: false,
-})``;
+})`
+  margin: 32px 0;
+`;
+
+export const CartGame = styled.View`
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 32px;
+`;
+
+export const DeleteButton = styled.TouchableOpacity``;
+
+export const Details = styled.View<CartGameProps>`
+  flex: 1;
+  padding: 8px 0 8px 12px;
+  border-left-width: ${RFValue(4)}px;
+  border-left-color: ${({ color }) => color};
+  border-top-left-radius: ${RFValue(4)}px;
+  border-bottom-left-radius: ${RFValue(4)}px;
+  margin-left: 12px;
+`;
+
+export const Numbers = styled.Text`
+  ${({ theme }) => css`
+    font-family: ${theme.fonts.primary_700_italic};
+    font-size: ${RFValue(15)}px;
+    color: ${theme.colors.text_600};
+    line-height: ${RFValue(20)}px;
+  `}
+`;
+
+export const Footer = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
+
+export const Type = styled.Text<CartGameProps>`
+  ${({ theme, color }) => css`
+    font-family: ${theme.fonts.primary_700_italic};
+    font-size: ${RFValue(16)}px;
+    color: ${color};
+  `}
+`;
+
+export const Price = styled.Text`
+  ${({ theme }) => css`
+    margin-left: 14px;
+
+    font-family: ${theme.fonts.primary_400_regular};
+    font-size: ${RFValue(16)}px;
+    color: ${theme.colors.text_600};
+  `}
+`;
 
 export const Total = styled.Text`
   ${({ theme }) => css`
