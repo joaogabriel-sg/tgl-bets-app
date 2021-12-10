@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, FlatList, Text } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
@@ -8,6 +8,7 @@ import {
   useFocusEffect,
   useNavigation,
 } from "@react-navigation/native";
+import { format, parseISO } from "date-fns";
 
 import { AppHeader, Footer, Loading } from "../../components";
 
@@ -16,22 +17,52 @@ import EmptyGamesSvg from "../../shared/assets/empty-games.svg";
 import { RootStackParamList } from "../../routes";
 
 import { useReduxDispatch, useReduxSelector } from "../../shared/hooks";
+import { formatCurrencyToBRL } from "../../shared/utils";
 
 import { fetchUserBets } from "../../store/slices/bets/actions";
 import { selectBets } from "../../store/slices/bets/selectors";
 
 import * as S from "./styles";
-import { format, parseISO } from "date-fns";
-import { formatCurrencyToBRL } from "../../shared/utils";
+
+interface IBetType {
+  id: number;
+  type: string;
+  color: string;
+}
 
 export function Home() {
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedTypesFilter, setSelectedTypesFilter] = useState<IBetType[]>(
+    []
+  );
   const bets = useReduxSelector(selectBets);
 
   const dispatch = useReduxDispatch();
 
   const theme = useTheme();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  const betsTypes = useMemo(() => {
+    const allTypes = bets.map((bet) => bet.type);
+    const uniqueTypes: IBetType[] = [];
+
+    for (const type of allTypes) {
+      const isExistent = uniqueTypes.find(
+        (uniqueType) => uniqueType.id === type.id
+      );
+      if (!isExistent) uniqueTypes.push(type);
+    }
+
+    return uniqueTypes;
+  }, [bets]);
+
+  const betsFiltered = useMemo(() => {
+    return bets.filter(
+      (bet) =>
+        selectedTypesFilter.length === 0 ||
+        selectedTypesFilter.some((typeFilter) => typeFilter.id === bet.game_id)
+    );
+  }, [bets, selectedTypesFilter]);
 
   function handleNavigateToNewBet() {
     navigation.navigate("NewBet");
@@ -48,6 +79,31 @@ export function Home() {
     }
   }, []);
 
+  function handleToggleFilterSelectionByTypeId(id: number) {
+    const existentTypeFilter = selectedTypesFilter.find(
+      (typeFilter) => typeFilter.id === id
+    );
+
+    if (existentTypeFilter) {
+      setSelectedTypesFilter((prevSelectedTypesFilter) => {
+        return prevSelectedTypesFilter.filter(
+          (typeFilter) => typeFilter.id !== existentTypeFilter.id
+        );
+      });
+      return;
+    }
+
+    const newSelectedTypeFilter = betsTypes.find(
+      (betType) => betType.id === id
+    );
+
+    if (newSelectedTypeFilter)
+      setSelectedTypesFilter((prevSelectedTypesFilter) => [
+        ...prevSelectedTypesFilter,
+        newSelectedTypeFilter,
+      ]);
+  }
+
   useFocusEffect(
     useCallback(() => {
       fetchUserBetsInApi();
@@ -60,7 +116,7 @@ export function Home() {
 
       <AppHeader />
 
-      {bets.length === 0 && (
+      {betsFiltered.length === 0 && (
         <S.EmptyContent>
           <S.ScreenTitle>Recent Games</S.ScreenTitle>
 
@@ -74,10 +130,42 @@ export function Home() {
         </S.EmptyContent>
       )}
 
-      {bets.length > 0 && (
+      {betsFiltered.length > 0 && (
         <S.Content>
+          <S.ScreenTitle>Recent Games</S.ScreenTitle>
+
+          <S.FilterWrapper>
+            <S.FilterTitle>Filters</S.FilterTitle>
+
+            <FlatList
+              data={betsTypes}
+              keyExtractor={(item) => String(item.id)}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              style={{ width: "100%" }}
+              renderItem={({ item }) => {
+                const isActive = selectedTypesFilter.some(
+                  (typeFilter) => typeFilter.id === item.id
+                );
+                const color = item.color;
+
+                return (
+                  <S.TypeFilterButton
+                    active={isActive}
+                    color={color}
+                    onPress={() => handleToggleFilterSelectionByTypeId(item.id)}
+                  >
+                    <S.TypeFilterText active={isActive} color={color}>
+                      {item.type}
+                    </S.TypeFilterText>
+                  </S.TypeFilterButton>
+                );
+              }}
+            />
+          </S.FilterWrapper>
+
           <FlatList
-            data={bets}
+            data={betsFiltered}
             keyExtractor={(item) => String(item.id)}
             showsVerticalScrollIndicator={false}
             style={{ width: "100%" }}
@@ -93,7 +181,7 @@ export function Home() {
                   <S.BetDescription>
                     <S.BetNumbers>{formattedNumbers}</S.BetNumbers>
                     <S.BetDateAndPrice>
-                      {format(parseISO(item.created_at), "dd/MM/yyyy")}{" "}
+                      {format(parseISO(item.created_at), "dd/MM/yyyy")} -{" "}
                       {formatCurrencyToBRL(item.price)}
                     </S.BetDateAndPrice>
                     <S.BetType color={item.type.color}>

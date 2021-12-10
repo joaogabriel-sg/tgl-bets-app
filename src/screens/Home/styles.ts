@@ -6,6 +6,11 @@ interface BetCardProps {
   color: string;
 }
 
+interface TypeFilterButtonProps {
+  active: boolean;
+  color: string;
+}
+
 export const Container = styled.View`
   flex: 1;
 `;
@@ -54,6 +59,55 @@ export const Content = styled.View`
 
   flex: 1;
   align-items: center;
+`;
+
+export const FilterWrapper = styled.View`
+  width: 100%;
+  margin-bottom: 32px;
+  align-items: center;
+`;
+
+export const FilterTitle = styled.Text`
+  ${({ theme }) => css`
+    margin-bottom: 12px;
+
+    font-family: ${theme.fonts.primary_400_italic};
+    font-size: ${RFValue(17)}px;
+    color: ${theme.colors.text_600};
+  `}
+`;
+
+export const TypeFilterButton = styled.TouchableOpacity<TypeFilterButtonProps>`
+  ${({ active, color }) => css`
+    background: transparent;
+    min-width: ${RFValue(120)}px;
+    height: ${RFValue(34)}px;
+    border-width: ${RFValue(2)}px;
+    border-radius: 9999px;
+    margin-right: 16px;
+    border-color: ${color};
+
+    align-items: center;
+    justify-content: center;
+
+    ${active &&
+    css`
+      background: ${color};
+    `}
+  `}
+`;
+
+export const TypeFilterText = styled.Text<TypeFilterButtonProps>`
+  ${({ theme, active, color }) => css`
+    font-family: ${theme.fonts.primary_700_italic};
+    font-size: ${RFValue(14)}px;
+    color: ${color};
+
+    ${active &&
+    css`
+      color: ${theme.colors.shape_light};
+    `}
+  `}
 `;
 
 export const BetWrapper = styled.View`
