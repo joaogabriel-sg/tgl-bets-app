@@ -192,9 +192,7 @@ export const Icon = styled(Ionicons)`
   color: ${({ theme }) => theme.colors.shape_light};
 `;
 
-export const OpenCartButton = styled.TouchableOpacity.attrs({
-  activeOpacity: 0.65,
-})`
+export const OpenCartButton = styled(RectButton)`
   background: ${({ theme }) => theme.colors.success};
   width: ${RFValue(48)}px;
   height: ${RFValue(48)}px;
