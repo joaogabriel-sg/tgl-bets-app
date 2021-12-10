@@ -1,37 +1,24 @@
 import styled, { css } from "styled-components/native";
 import { RFValue } from "react-native-responsive-fontsize";
-import { RectButton } from "react-native-gesture-handler";
+import { FlatList, FlatListProps } from "react-native";
 
-interface BetCardProps {
-  color: string;
-}
-
-interface TypeFilterButtonProps {
-  active: boolean;
-  color: string;
-}
+import { IBet } from "../../store/slices/bets";
+import { IBetType } from ".";
 
 export const Container = styled.View`
   flex: 1;
 `;
 
-export const ScreenTitle = styled.Text`
-  ${({ theme }) => css`
-    margin-bottom: ${RFValue(30)}px;
-    font-family: ${theme.fonts.primary_700_italic};
-    font-size: ${RFValue(24)}px;
-    color: ${theme.colors.text_700};
-    text-transform: uppercase;
-  `}
+export const ScreenTitleContainer = styled.Text`
+  margin-bottom: ${RFValue(30)}px;
 `;
 
-export const EmptyContent = styled.ScrollView.attrs({
-  contentContainerStyle: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-})``;
+export const Content = styled.View`
+  padding: ${RFValue(48)}px ${RFValue(16)}px ${RFValue(24)}px;
+
+  flex: 1;
+  align-items: center;
+`;
 
 export const InfoLegend = styled.Text`
   ${({ theme }) => css`
@@ -54,13 +41,6 @@ export const InfoMessage = styled.Text`
   `}
 `;
 
-export const Content = styled.View`
-  padding: ${RFValue(48)}px ${RFValue(16)}px ${RFValue(24)}px;
-
-  flex: 1;
-  align-items: center;
-`;
-
 export const FilterWrapper = styled.View`
   width: 100%;
   margin-bottom: 32px;
@@ -77,102 +57,26 @@ export const FilterTitle = styled.Text`
   `}
 `;
 
-export const TypeFilterButton = styled.TouchableOpacity<TypeFilterButtonProps>`
-  ${({ active, color }) => css`
-    background: transparent;
-    min-width: ${RFValue(120)}px;
-    height: ${RFValue(34)}px;
-    border-width: ${RFValue(2)}px;
-    border-radius: 9999px;
-    margin-right: 16px;
-    border-color: ${color};
+export const BetTypeList = styled(
+  FlatList as new (props: FlatListProps<IBetType>) => FlatList<IBetType>
+).attrs({
+  horizontal: true,
+  showsHorizontalScrollIndicator: false,
+})``;
 
-    align-items: center;
-    justify-content: center;
-
-    ${active &&
-    css`
-      background: ${color};
-    `}
-  `}
-`;
-
-export const TypeFilterText = styled.Text<TypeFilterButtonProps>`
-  ${({ theme, active, color }) => css`
-    font-family: ${theme.fonts.primary_700_italic};
-    font-size: ${RFValue(14)}px;
-    color: ${color};
-
-    ${active &&
-    css`
-      color: ${theme.colors.shape_light};
-    `}
-  `}
-`;
-
-export const BetWrapper = styled.View`
+export const BetList = styled(
+  FlatList as new (props: FlatListProps<IBet>) => FlatList<IBet>
+).attrs({
+  showsVerticalScrollIndicator: false,
+})`
   width: 100%;
-  margin-bottom: 30px;
-  flex-direction: row;
 `;
 
-export const DetailLeft = styled.View<BetCardProps>`
-  background: ${({ color }) => color};
-  width: ${RFValue(6)}px;
-  height: 100%;
-  border-radius: 4px;
-`;
-
-export const BetDescription = styled.View`
-  padding-left: 22px;
-`;
-
-export const BetNumbers = styled.Text`
-  ${({ theme }) => css`
-    font-family: ${theme.fonts.primary_700_italic};
-    font-size: ${RFValue(20)}px;
-    color: ${theme.colors.text_600};
-  `}
-`;
-
-export const BetDateAndPrice = styled.Text`
-  ${({ theme }) => css`
-    margin: 16px 0 12px;
-
-    font-family: ${theme.fonts.primary_400_regular};
-    font-size: ${RFValue(17)}px;
-    color: ${theme.colors.text_600};
-  `}
-`;
-
-export const BetType = styled.Text<BetCardProps>`
-  ${({ theme, color }) => css`
-    font-family: ${theme.fonts.primary_700_italic};
-    font-size: ${RFValue(20)}px;
-    color: ${color};
-  `}
-`;
-
-export const NewBetButton = styled(RectButton)`
-  background: ${({ theme }) => theme.colors.primary};
-  padding: 6px 12px;
-  border-radius: 999px;
-
-  flex-direction: row;
-  align-items: center;
+export const NewBetButtonContainer = styled.View`
+  width: ${RFValue(140)}px;
 
   position: absolute;
   right: ${RFValue(16)}px;
   bottom: ${RFValue(66)}px;
   z-index: 100;
-`;
-
-export const NewBetText = styled.Text`
-  ${({ theme }) => css`
-    margin-right: 8px;
-
-    font-family: ${theme.fonts.primary_700_italic};
-    font-size: ${RFValue(18)}px;
-    color: ${theme.colors.shape_light};
-  `}
 `;

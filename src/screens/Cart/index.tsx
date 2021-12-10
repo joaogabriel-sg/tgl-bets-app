@@ -5,7 +5,7 @@ import { useTheme } from "styled-components";
 import { RFValue } from "react-native-responsive-fontsize";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 
-import { Loading } from "../../components";
+import { Loading, ScreenTitle } from "../../components";
 
 import EmptyGamesSvg from "../../shared/assets/empty-games.svg";
 
@@ -71,7 +71,7 @@ export function Cart({ handleCloseCart }: Props) {
 
       <S.Content>
         <S.TitleContainer>
-          <S.Title>Cart</S.Title>
+          <ScreenTitle>Cart</ScreenTitle>
 
           <S.CloseCartButton onPress={handleCloseCart}>
             <Feather name="x" size={24} color={theme.colors.error} />
@@ -116,9 +116,9 @@ export function Cart({ handleCloseCart }: Props) {
         )}
 
         <S.TitleContainer>
-          <S.Title>
+          <ScreenTitle>
             Cart <S.Total>Total: {formatCurrencyToBRL(cartTotalValue)}</S.Total>
-          </S.Title>
+          </ScreenTitle>
         </S.TitleContainer>
       </S.Content>
 

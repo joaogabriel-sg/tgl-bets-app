@@ -4,7 +4,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import uuid from "react-native-uuid";
 
 import { Cart } from "../Cart";
-import { AppHeader, Footer, Loading } from "../../components";
+import { AppHeader, Footer, Loading, ScreenTitle } from "../../components";
 
 import { useReduxDispatch, useReduxSelector } from "../../shared/hooks";
 import { sortArray } from "../../shared/utils";
@@ -128,9 +128,9 @@ export function NewBet() {
       {!!selectedGame && (
         <>
           <S.ScreenTitleContainer>
-            <S.ScreenTitle>
+            <ScreenTitle>
               New Bet <S.TypeOfGame>for {selectedGame.type}</S.TypeOfGame>
-            </S.ScreenTitle>
+            </ScreenTitle>
           </S.ScreenTitleContainer>
 
           <S.Content>

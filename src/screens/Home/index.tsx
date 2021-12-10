@@ -1,25 +1,23 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Alert, FlatList } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Alert } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
-import { useTheme } from "styled-components";
-import {
-  NavigationProp,
-  useFocusEffect,
-  useNavigation,
-} from "@react-navigation/native";
-import { format, parseISO } from "date-fns";
+import { useFocusEffect } from "@react-navigation/native";
 
-import { AppHeader, Footer, Loading } from "../../components";
+import {
+  AppHeader,
+  BetCard,
+  ButtonTypeOfGame,
+  Footer,
+  Loading,
+  NewBetButton,
+  ScreenTitle,
+} from "../../components";
 
 import EmptyGamesSvg from "../../shared/assets/empty-games.svg";
-
-import { RootStackParamList } from "../../routes";
 
 import { api } from "../../shared/services";
 
 import { useReduxDispatch, useReduxSelector } from "../../shared/hooks";
-import { formatCurrencyToBRL } from "../../shared/utils";
 
 import { fetchUserBets } from "../../store/slices/bets/actions";
 import { selectBets } from "../../store/slices/bets/selectors";
@@ -28,7 +26,7 @@ import { IApiGames } from "../../store/slices/games";
 
 import * as S from "./styles";
 
-interface IBetType {
+export interface IBetType {
   id: number;
   type: string;
   color: string;
@@ -41,9 +39,6 @@ export function Home() {
   const bets = useReduxSelector(selectBets);
 
   const dispatch = useReduxDispatch();
-
-  const theme = useTheme();
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const betsTypes = useMemo(() => {
     const allTypes = bets.map((bet) => bet.type);
@@ -58,10 +53,6 @@ export function Home() {
 
     return uniqueTypes;
   }, [bets]);
-
-  function handleNavigateToNewBet() {
-    navigation.navigate("NewBet");
-  }
 
   const fetchUserBetsInApi = useCallback(async () => {
     try {
@@ -145,93 +136,52 @@ export function Home() {
 
       <AppHeader />
 
-      {bets.length === 0 && (
-        <S.EmptyContent>
-          <S.ScreenTitle>Recent Games</S.ScreenTitle>
+      <S.Content>
+        <S.ScreenTitleContainer>
+          <ScreenTitle>Recent Games</ScreenTitle>
+        </S.ScreenTitleContainer>
 
-          <S.InfoLegend>No games</S.InfoLegend>
+        {bets.length === 0 && (
+          <>
+            <S.InfoLegend>No games</S.InfoLegend>
+            <EmptyGamesSvg height={RFValue(164)} />
 
-          <EmptyGamesSvg height={RFValue(164)} />
+            <S.InfoMessage>
+              You still don't have registered games...
+            </S.InfoMessage>
+          </>
+        )}
 
-          <S.InfoMessage>
-            You still don't have registered games...
-          </S.InfoMessage>
-        </S.EmptyContent>
-      )}
-
-      {bets.length > 0 && (
-        <S.Content>
-          <S.ScreenTitle>Recent Games</S.ScreenTitle>
-
-          <S.FilterWrapper>
-            <S.FilterTitle>Filters</S.FilterTitle>
-
-            <FlatList
-              data={betsTypes}
-              keyExtractor={(item) => String(item.id)}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              style={{ width: "100%" }}
-              renderItem={({ item }) => {
-                const isActive = selectedTypes.some(
-                  (type) => type === item.type
-                );
-                const color = item.color;
-
-                return (
-                  <S.TypeFilterButton
-                    active={isActive}
-                    color={color}
+        {bets.length > 0 && (
+          <>
+            <S.FilterWrapper>
+              <S.FilterTitle>Filters</S.FilterTitle>
+              <S.BetTypeList
+                data={betsTypes}
+                keyExtractor={(item) => String(item.id)}
+                renderItem={({ item }) => (
+                  <ButtonTypeOfGame
+                    title={item.type}
+                    isActive={selectedTypes.some((type) => type === item.type)}
+                    color={item.color}
                     onPress={() => handleToggleFilterSelectionByType(item.type)}
-                  >
-                    <S.TypeFilterText active={isActive} color={color}>
-                      {item.type}
-                    </S.TypeFilterText>
-                  </S.TypeFilterButton>
-                );
-              }}
+                  />
+                )}
+              />
+            </S.FilterWrapper>
+
+            <S.BetList
+              data={filteredBets}
+              keyExtractor={(item) => String(item.id)}
+              renderItem={({ item }) => <BetCard bet={item} />}
             />
-          </S.FilterWrapper>
+          </>
+        )}
+      </S.Content>
 
-          <FlatList
-            data={filteredBets}
-            keyExtractor={(item) => String(item.id)}
-            showsVerticalScrollIndicator={false}
-            style={{ width: "100%" }}
-            renderItem={({ item }) => {
-              const formattedNumbers = item.choosen_numbers
-                .split(",")
-                .map((number) => `${number}`.padStart(2, "0"))
-                .join(", ");
-
-              return (
-                <S.BetWrapper>
-                  <S.DetailLeft color={item.type.color} />
-                  <S.BetDescription>
-                    <S.BetNumbers>{formattedNumbers}</S.BetNumbers>
-                    <S.BetDateAndPrice>
-                      {format(parseISO(item.created_at), "dd/MM/yyyy")} -{" "}
-                      {formatCurrencyToBRL(item.price)}
-                    </S.BetDateAndPrice>
-                    <S.BetType color={item.type.color}>
-                      {item.type.type}
-                    </S.BetType>
-                  </S.BetDescription>
-                </S.BetWrapper>
-              );
-            }}
-          />
-        </S.Content>
-      )}
-
-      <S.NewBetButton onPress={handleNavigateToNewBet}>
-        <S.NewBetText>New Bet</S.NewBetText>
-        <Feather
-          name="arrow-right"
-          size={RFValue(24)}
-          color={theme.colors.shape_light}
-        />
-      </S.NewBetButton>
+      <S.NewBetButtonContainer>
+        <NewBetButton />
+      </S.NewBetButtonContainer>
 
       <Footer />
     </S.Container>
