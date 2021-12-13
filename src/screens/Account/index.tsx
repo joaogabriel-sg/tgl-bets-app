@@ -1,5 +1,5 @@
-import React from "react";
-import { Platform } from "react-native";
+import React, { useState } from "react";
+import { Alert, Platform } from "react-native";
 
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -10,12 +10,14 @@ import {
   Button,
   Footer,
   InputForm,
+  Loading,
   ScreenTitle,
 } from "../../components";
 
-import { useReduxSelector } from "../../shared/hooks";
+import { useReduxDispatch, useReduxSelector } from "../../shared/hooks";
 
 import { selectUser } from "../../store/slices/auth/selectors";
+import { updateUserData } from "../../store/slices/auth/actions";
 
 import * as S from "./styles";
 
@@ -33,7 +35,10 @@ const schema = yup.object().shape({
 });
 
 export function Account() {
+  const [isLoading, setIsLoading] = useState(false);
+
   const user = useReduxSelector(selectUser)!;
+  const dispatch = useReduxDispatch();
 
   const {
     control,
@@ -43,11 +48,23 @@ export function Account() {
     resolver: yupResolver(schema),
   });
 
-  function handleChangeAccountSettings(data: FormData) {}
+  async function handleChangeAccountSettings(data: FormData) {
+    try {
+      setIsLoading(true);
+      await dispatch(updateUserData(data));
+      Alert.alert("Account data changed successfully!");
+    } catch (err: any) {
+      Alert.alert(err.message, "", [{ text: "Okay" }]);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <S.Container behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <AppHeader />
+
+      {isLoading && <Loading />}
 
       <S.ScreenTitleContainer>
         <ScreenTitle>Account Settings</ScreenTitle>
