@@ -13,12 +13,13 @@ interface Props extends TextInputProps {
 }
 
 export const InputForm = React.forwardRef<TextInput, Props>(
-  ({ control, name, error, ...props }, ref) => {
+  ({ control, name, error, defaultValue, ...props }, ref) => {
     return (
       <S.Container>
         <Controller
           control={control}
           name={name}
+          defaultValue={defaultValue}
           render={({ field }) => (
             <Input
               {...props}
