@@ -14,12 +14,12 @@ import {
 } from "../../components";
 
 import { useReduxDispatch, useReduxSelector } from "../../shared/hooks";
-import { sortArray } from "../../shared/utils";
 
 import { fetchGames } from "../../store/slices/games/actions";
 import { selectGames } from "../../store/slices/games/selectors";
 import { addToCart } from "../../store/slices/cart";
 
+import { sortArray } from "../../shared/utils";
 import { ITypeOfGame } from "../../shared/types";
 
 import * as S from "./styles";
@@ -35,6 +35,7 @@ export function NewBet() {
 
   const gameNumbers = useMemo(() => {
     if (!selectedGame) return [];
+
     return Array.from({ length: selectedGame.range }).map(
       (_, index) => index + 1
     );
@@ -53,8 +54,9 @@ export function NewBet() {
 
   function handleSelectGameById(id: number) {
     const newSelectedGame = games.find((game) => game.id === id)!;
+
     setSelectedGame(newSelectedGame);
-    setSelectedNumbers([]);
+    handleClearGame();
   }
 
   function handleToggleNumberSelection(number: number) {
@@ -66,7 +68,7 @@ export function NewBet() {
         return sortArray(filteredNumbers);
       }
 
-      if (selectedGame && prevSelectedNumbers.length < selectedGame.max_number)
+      if (selectedGame && selectedGame.max_number > prevSelectedNumbers.length)
         return sortArray([...prevSelectedNumbers, number]);
 
       return prevSelectedNumbers;
@@ -88,13 +90,13 @@ export function NewBet() {
     };
 
     dispatch(addToCart(newCartGame));
-    setSelectedNumbers([]);
+    handleClearGame();
   }
 
   function handleCompleteGame() {
-    const newNumbers: number[] = [...selectedNumbers];
-
     if (!selectedGame) return;
+
+    const newNumbers: number[] = [...selectedNumbers];
 
     while (newNumbers.length < selectedGame.max_number) {
       const newNumber = Math.floor(Math.random() * selectedGame.range) + 1;
