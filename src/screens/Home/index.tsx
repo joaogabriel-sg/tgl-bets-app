@@ -57,6 +57,7 @@ export function Home() {
   const fetchUserBetsInApi = useCallback(async () => {
     try {
       setIsLoading(true);
+      setSelectedTypes([]);
       await dispatch(fetchUserBets());
     } catch (err: any) {
       Alert.alert(err.message, "", [{ text: "Okay" }]);
