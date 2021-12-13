@@ -5,6 +5,10 @@ import { api } from "../../../../shared/services";
 
 import { authenticate, IApiUser, logout } from "../index";
 
+import { clearCart } from "../../cart";
+import { clearBets } from "../../bets";
+import { clearGames } from "../../games";
+
 import { IAsyncThunkConfig } from "../../../../shared/types";
 
 interface INewUser {
@@ -147,5 +151,8 @@ export const logoutUser = createAsyncThunk<void, void, IAsyncThunkConfig>(
     };
 
     thunkApi.dispatch(logout());
+    thunkApi.dispatch(clearCart());
+    thunkApi.dispatch(clearBets());
+    thunkApi.dispatch(clearGames());
   }
 );
