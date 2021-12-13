@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { ScrollView } from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -15,8 +17,6 @@ interface FormData {
   email: string;
 }
 
-type Props = NativeStackScreenProps<RootStackParamList, "Authentication">;
-
 const schema = yup.object().shape({
   email: yup
     .string()
@@ -24,8 +24,10 @@ const schema = yup.object().shape({
     .email("Invalid email address!"),
 });
 
-export function ResetPassword({ navigation }: Props) {
+export function ResetPassword() {
   const containerRef = useRef<ScrollView>(null);
+
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const {
     control,

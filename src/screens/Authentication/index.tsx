@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, ScrollView, TextInput } from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -28,8 +30,6 @@ interface FormData {
   password: string;
 }
 
-type Props = NativeStackScreenProps<RootStackParamList, "Authentication">;
-
 const schema = yup.object().shape({
   email: yup
     .string()
@@ -45,11 +45,13 @@ const schema = yup.object().shape({
     ),
 });
 
-export function Authentication({ navigation }: Props) {
+export function Authentication() {
   const [isLoading, setIsLoading] = useState(false);
 
   const containerRef = useRef<ScrollView>(null);
   const passwordInputRef = useRef<TextInput>(null);
+
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const dispatch = useReduxDispatch();
 
@@ -72,16 +74,11 @@ export function Authentication({ navigation }: Props) {
   async function handleAuthenticate(data: FormData) {
     try {
       setIsLoading(true);
-      await delay();
       await dispatch(loginUser(data)).unwrap();
     } catch (err: any) {
       Alert.alert(err.message, "", [{ text: "Okay" }]);
       setIsLoading(false);
     }
-  }
-
-  function delay(ms = 1000) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   useEffect(() => {
