@@ -5,6 +5,7 @@ export * from "./ButtonTypeOfGame";
 export * from "./Card";
 export * from "./CartGame";
 export * from "./ControlButton";
+export * from "./CustomDrawer";
 export * from "./Footer";
 export * from "./Form";
 export * from "./Loading";
