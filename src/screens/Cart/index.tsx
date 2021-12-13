@@ -5,7 +5,7 @@ import { useTheme } from "styled-components";
 import { RFValue } from "react-native-responsive-fontsize";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 
-import { Loading, ScreenTitle } from "../../components";
+import { CartGame, Loading, ScreenTitle } from "../../components";
 
 import EmptyGamesSvg from "../../shared/assets/empty-games.svg";
 
@@ -90,27 +90,10 @@ export function Cart({ handleCloseCart }: Props) {
             data={cartGames}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <S.CartGame>
-                <S.DeleteButton onPress={() => handleRemoveCartGame(item.id)}>
-                  <Feather
-                    name="trash-2"
-                    size={26}
-                    color={theme.colors.text_600}
-                  />
-                </S.DeleteButton>
-
-                <S.Details color={item.color}>
-                  <S.Numbers>
-                    {item.numbers
-                      .map((number) => `${number}`.padStart(2, "0"))
-                      .join(", ")}
-                  </S.Numbers>
-                  <S.Footer>
-                    <S.Type color={item.color}>{item.type}</S.Type>
-                    <S.Price>{formatCurrencyToBRL(item.price)}</S.Price>
-                  </S.Footer>
-                </S.Details>
-              </S.CartGame>
+              <CartGame
+                cartGame={item}
+                onDelete={() => handleRemoveCartGame(item.id)}
+              />
             )}
           />
         )}

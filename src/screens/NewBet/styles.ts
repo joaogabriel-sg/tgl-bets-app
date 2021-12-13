@@ -137,54 +137,12 @@ export const ControlButtonsContainer = styled.View`
   padding: 12px 0 32px;
 `;
 
-export const ControlButtonsRow = styled.View`
+export const ControlButtonWrapper = styled.View`
   margin-bottom: 12px;
 
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-`;
-
-interface ControlButtonProps {
-  isOutlined?: boolean;
-}
-
-export const ControlButton = styled.TouchableOpacity<ControlButtonProps>`
-  ${({ theme, isOutlined }) => css`
-    background: ${theme.colors.success};
-    min-height: ${RFValue(52)}px;
-    border-width: ${RFValue(1)}px;
-    border-color: transparent;
-    border-radius: 10px;
-
-    flex: 1;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-
-    ${isOutlined &&
-    css`
-      background: transparent;
-      border-color: ${theme.colors.success};
-    `}
-  `}
-`;
-
-export const ControlButtonText = styled.Text<ControlButtonProps>`
-  ${({ theme, isOutlined }) => css`
-    margin-left: 16px;
-
-    font-family: ${theme.fonts.primary_700_regular};
-    font-size: ${RFValue(16)}px;
-    color: ${theme.colors.shape_light};
-
-    ${isOutlined &&
-    css`
-      margin-left: 0;
-      font-family: ${theme.fonts.primary_400_regular};
-      color: ${theme.colors.success};
-    `}
-  `}
 `;
 
 export const Icon = styled(Ionicons)`

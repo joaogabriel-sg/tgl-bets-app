@@ -4,7 +4,14 @@ import { useFocusEffect } from "@react-navigation/native";
 import uuid from "react-native-uuid";
 
 import { Cart } from "../Cart";
-import { AppHeader, Footer, Loading, ScreenTitle } from "../../components";
+import {
+  AppHeader,
+  ButtonTypeOfGame,
+  ControlButton,
+  Footer,
+  Loading,
+  ScreenTitle,
+} from "../../components";
 
 import { useReduxDispatch, useReduxSelector } from "../../shared/hooks";
 import { sortArray } from "../../shared/utils";
@@ -139,18 +146,12 @@ export function NewBet() {
               data={games}
               keyExtractor={(item) => String(item.id)}
               renderItem={({ item }) => (
-                <S.GameButton
-                  active={selectedGame.id === item.id}
+                <ButtonTypeOfGame
+                  isActive={selectedGame.id === item.id}
+                  title={item.type}
                   color={item.color}
                   onPress={() => handleSelectGameById(item.id)}
-                >
-                  <S.GameButtonTitle
-                    active={selectedGame.id === item.id}
-                    color={item.color}
-                  >
-                    {item.type}
-                  </S.GameButtonTitle>
-                </S.GameButton>
+                />
               )}
             />
 
@@ -172,28 +173,29 @@ export function NewBet() {
             </S.Numbers>
 
             <S.ControlButtonsContainer>
-              <S.ControlButtonsRow>
-                <S.ControlButton onPress={handleAddToCart}>
-                  <S.Icon name="cart-outline" />
-                  <S.ControlButtonText>Add to Cart</S.ControlButtonText>
-                </S.ControlButton>
-              </S.ControlButtonsRow>
+              <S.ControlButtonWrapper>
+                <ControlButton
+                  title="Add to Cart"
+                  icon={<S.Icon name="cart-outline" />}
+                  onPress={handleAddToCart}
+                />
+              </S.ControlButtonWrapper>
 
-              <S.ControlButtonsRow>
-                <S.ControlButton isOutlined onPress={handleCompleteGame}>
-                  <S.ControlButtonText isOutlined>
-                    Complete game
-                  </S.ControlButtonText>
-                </S.ControlButton>
-              </S.ControlButtonsRow>
+              <S.ControlButtonWrapper>
+                <ControlButton
+                  title="Complete game"
+                  isOutlined
+                  onPress={handleCompleteGame}
+                />
+              </S.ControlButtonWrapper>
 
-              <S.ControlButtonsRow>
-                <S.ControlButton isOutlined onPress={handleClearGame}>
-                  <S.ControlButtonText isOutlined>
-                    Clear game
-                  </S.ControlButtonText>
-                </S.ControlButton>
-              </S.ControlButtonsRow>
+              <S.ControlButtonWrapper>
+                <ControlButton
+                  title="Clear game"
+                  isOutlined
+                  onPress={handleClearGame}
+                />
+              </S.ControlButtonWrapper>
             </S.ControlButtonsContainer>
           </S.Content>
         </>

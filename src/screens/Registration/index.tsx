@@ -8,6 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import {
   AuthHeader,
   Button,
+  Card,
   Footer,
   InputForm,
   Loading,
@@ -97,50 +98,56 @@ export function Registration({ navigation }: Props) {
       <S.Content>
         <AuthHeader screenTitle="Registration" />
 
-        <S.Form>
-          <InputForm
-            name="name"
-            control={control}
-            error={errors.name && errors.name.message}
-            placeholder="Name"
-            keyboardType="default"
-            returnKeyType="next"
-            blurOnSubmit={false}
-            onSubmitEditing={() => {
-              emailInputRef.current?.focus();
-            }}
-          />
+        <Card>
+          <S.InputWrapper>
+            <InputForm
+              name="name"
+              control={control}
+              error={errors.name && errors.name.message}
+              placeholder="Name"
+              keyboardType="default"
+              returnKeyType="next"
+              blurOnSubmit={false}
+              onSubmitEditing={() => {
+                emailInputRef.current?.focus();
+              }}
+            />
+          </S.InputWrapper>
 
-          <InputForm
-            name="email"
-            control={control}
-            error={errors.email && errors.email.message}
-            placeholder="Email"
-            keyboardType="email-address"
-            ref={emailInputRef}
-            returnKeyType="next"
-            blurOnSubmit={false}
-            onSubmitEditing={() => {
-              passwordInputRef.current?.focus();
-            }}
-          />
+          <S.InputWrapper>
+            <InputForm
+              name="email"
+              control={control}
+              error={errors.email && errors.email.message}
+              placeholder="Email"
+              keyboardType="email-address"
+              ref={emailInputRef}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              onSubmitEditing={() => {
+                passwordInputRef.current?.focus();
+              }}
+            />
+          </S.InputWrapper>
 
-          <InputForm
-            name="password"
-            control={control}
-            error={errors.password && errors.password.message}
-            placeholder="Password"
-            secureTextEntry
-            ref={passwordInputRef}
-            onSubmitEditing={handleSubmit(handleRegisterNewUser)}
-          />
+          <S.InputWrapper>
+            <InputForm
+              name="password"
+              control={control}
+              error={errors.password && errors.password.message}
+              placeholder="Password"
+              secureTextEntry
+              ref={passwordInputRef}
+              onSubmitEditing={handleSubmit(handleRegisterNewUser)}
+            />
+          </S.InputWrapper>
 
           <Button
             isPrimary
             title="Register"
             onPress={handleSubmit(handleRegisterNewUser)}
           />
-        </S.Form>
+        </Card>
 
         <Button title="Back" arrowPosition="left" onPress={handleGoBack} />
       </S.Content>

@@ -8,6 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import {
   AuthHeader,
   Button,
+  Card,
   Footer,
   HelperButton,
   InputForm,
@@ -98,31 +99,35 @@ export function Authentication({ navigation }: Props) {
       <S.Content>
         <AuthHeader screenTitle="Authentication" />
 
-        <S.Form>
-          <InputForm
-            name="email"
-            control={control}
-            error={errors.email && errors.email.message}
-            placeholder="Email"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-            blurOnSubmit={false}
-            returnKeyType="next"
-            onSubmitEditing={() => {
-              passwordInputRef.current?.focus();
-            }}
-          />
+        <Card>
+          <S.InputWrapper>
+            <InputForm
+              name="email"
+              control={control}
+              error={errors.email && errors.email.message}
+              placeholder="Email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              blurOnSubmit={false}
+              returnKeyType="next"
+              onSubmitEditing={() => {
+                passwordInputRef.current?.focus();
+              }}
+            />
+          </S.InputWrapper>
 
-          <InputForm
-            name="password"
-            control={control}
-            error={errors.password && errors.password.message}
-            placeholder="Password"
-            secureTextEntry
-            ref={passwordInputRef}
-            onSubmitEditing={handleSubmit(handleAuthenticate)}
-          />
+          <S.InputWrapper>
+            <InputForm
+              name="password"
+              control={control}
+              error={errors.password && errors.password.message}
+              placeholder="Password"
+              secureTextEntry
+              ref={passwordInputRef}
+              onSubmitEditing={handleSubmit(handleAuthenticate)}
+            />
+          </S.InputWrapper>
 
           <HelperButton
             title="I forget my password"
@@ -134,7 +139,7 @@ export function Authentication({ navigation }: Props) {
             title="Log in"
             onPress={handleSubmit(handleAuthenticate)}
           />
-        </S.Form>
+        </Card>
 
         <Button title="Sign Up" onPress={handleNavigateToRegistration} />
       </S.Content>

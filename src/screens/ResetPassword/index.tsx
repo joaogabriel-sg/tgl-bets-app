@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import { AuthHeader, Button, Footer, InputForm } from "../../components";
+import { AuthHeader, Button, Card, Footer, InputForm } from "../../components";
 
 import { RootStackParamList } from "../../routes";
 
@@ -57,22 +57,24 @@ export function ResetPassword({ navigation }: Props) {
       <S.Content>
         <AuthHeader screenTitle="Reset Password" />
 
-        <S.Form>
-          <InputForm
-            name="email"
-            control={control}
-            error={errors.email && errors.email.message}
-            placeholder="Email"
-            keyboardType="email-address"
-            onSubmitEditing={handleSubmit(handleSendResetPasswordLink)}
-          />
+        <Card>
+          <S.InputWrapper>
+            <InputForm
+              name="email"
+              control={control}
+              error={errors.email && errors.email.message}
+              placeholder="Email"
+              keyboardType="email-address"
+              onSubmitEditing={handleSubmit(handleSendResetPasswordLink)}
+            />
+          </S.InputWrapper>
 
           <Button
             isPrimary
             title="Send link"
             onPress={handleSubmit(handleSendResetPasswordLink)}
           />
-        </S.Form>
+        </Card>
 
         <Button title="Back" arrowPosition="left" onPress={handleGoBack} />
       </S.Content>
