@@ -13,6 +13,11 @@ interface INewUser {
   password: string;
 }
 
+interface IUpdatedUser {
+  name: string;
+  email: string;
+}
+
 interface ILoginData {
   email: string;
   password: string;
@@ -49,6 +54,42 @@ export const createNewUser = createAsyncThunk<
       const serverError = error as AxiosError;
       if (serverError && serverError.response)
         errorMessage = serverError.response.data.error.message as string;
+    }
+
+    throw new Error(errorMessage);
+  }
+});
+
+export const updateUserData = createAsyncThunk<
+  void,
+  IUpdatedUser,
+  IAsyncThunkConfig
+>("@auth/updateUser", async (updatedUser, thunkApi) => {
+  try {
+    const { data } = await api.put<IApiUser>("/user/update", updatedUser);
+
+    const currentAuthentication = thunkApi.getState().auth;
+
+    const updatedAuthenticatedUser = {
+      user: {
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+      },
+      token: {
+        token: currentAuthentication.token!,
+        expires_at: currentAuthentication.expiresAt!,
+      },
+    };
+
+    thunkApi.dispatch(authenticate(updatedAuthenticatedUser));
+  } catch (error) {
+    let errorMessage = "Something went wrong, please contact our support!";
+
+    if (axios.isAxiosError(error)) {
+      const serverError = error as AxiosError;
+      if (serverError && serverError.response)
+        errorMessage = serverError.response.data.errors[0].message as string;
     }
 
     throw new Error(errorMessage);
