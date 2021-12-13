@@ -22,7 +22,7 @@ import { useReduxDispatch, useReduxSelector } from "../../shared/hooks";
 import { fetchUserBets } from "../../store/slices/bets/actions";
 import { selectBets } from "../../store/slices/bets/selectors";
 
-import { IApiGames, IBet } from "../../shared/types";
+import { IBet } from "../../shared/types";
 
 import * as S from "./styles";
 
@@ -41,17 +41,17 @@ export function Home() {
   const dispatch = useReduxDispatch();
 
   const betsTypes = useMemo(() => {
-    const allTypes = bets.map((bet) => bet.type);
-    const uniqueTypes: IBetType[] = [];
+    const types = bets.map(({ type }) => type);
+    const typesWithoutRepetition: IBetType[] = [];
 
-    for (const type of allTypes) {
-      const isExistent = uniqueTypes.find(
+    for (const type of types) {
+      const isExistent = typesWithoutRepetition.find(
         (uniqueType) => uniqueType.id === type.id
       );
-      if (!isExistent) uniqueTypes.push(type);
+      if (!isExistent) typesWithoutRepetition.push(type);
     }
 
-    return uniqueTypes;
+    return typesWithoutRepetition;
   }, [bets]);
 
   const fetchUserBetsInApi = useCallback(async () => {
@@ -65,58 +65,41 @@ export function Home() {
     }
   }, []);
 
+  const makeBetData = (betData: IBet) => {
+    const game = betsTypes.find((item) => item.id === betData.game_id);
+
+    if (!game) return betData;
+
+    const betType = { ...betData.type, color: game.color };
+    return { ...betData, type: betType };
+  };
+
   async function fetchFilteredBets(types: string[]) {
     const params = new URLSearchParams();
-    types.forEach((type) => {
-      params.append("type[]", type);
-    });
+    types.forEach((type) => params.append("type[]", type));
 
     const { data: filteredBetsData } = await api.get<IBet[]>("/bet/all-bets", {
       params,
     });
-    const { data: gamesData } = await api.get<IApiGames>("/cart_games");
 
-    const data = filteredBetsData.map((filteredBetData) => {
-      const game = gamesData.types.find(
-        (gameData) => gameData.id === filteredBetData.game_id
-      );
+    const newFilteredBets = filteredBetsData.map(makeBetData);
 
-      if (!game) return filteredBetData;
-
-      return {
-        ...filteredBetData,
-        type: {
-          ...filteredBetData.type,
-          color: game.color,
-        },
-      };
-    });
-
-    setFilteredBets(data);
+    setFilteredBets(newFilteredBets);
     setIsLoading(false);
   }
 
   function handleToggleFilterSelectionByType(type: string) {
     setIsLoading(true);
 
-    const existentTypeFilter = selectedTypes.find(
-      (typeFilter) => typeFilter === type
+    const existentType = selectedTypes.find(
+      (selectedType) => selectedType === type
     );
 
-    let types: string[] = [];
+    const types = existentType
+      ? selectedTypes.filter((selectedType) => selectedType !== type)
+      : [...selectedTypes, type];
 
-    if (existentTypeFilter) {
-      setSelectedTypes((prevSelectedTypes) =>
-        prevSelectedTypes.filter((selectedType) => selectedType !== type)
-      );
-      types = [...selectedTypes].filter(
-        (selectedType) => selectedType !== type
-      );
-    } else {
-      setSelectedTypes((prevSelectedTypes) => [...prevSelectedTypes, type]);
-      types = [...selectedTypes, type];
-    }
-
+    setSelectedTypes(types);
     fetchFilteredBets(types);
   }
 
