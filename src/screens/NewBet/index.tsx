@@ -18,8 +18,9 @@ import { sortArray } from "../../shared/utils";
 
 import { fetchGames } from "../../store/slices/games/actions";
 import { selectGames } from "../../store/slices/games/selectors";
-import { ITypeOfGames } from "../../store/slices/games";
 import { addToCart } from "../../store/slices/cart";
+
+import { ITypeOfGame } from "../../shared/types";
 
 import * as S from "./styles";
 
@@ -29,7 +30,7 @@ export function NewBet() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [selectedGame, setSelectedGame] = useState<ITypeOfGames | null>(null);
+  const [selectedGame, setSelectedGame] = useState<ITypeOfGame | null>(null);
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
 
   const gameNumbers = useMemo(() => {

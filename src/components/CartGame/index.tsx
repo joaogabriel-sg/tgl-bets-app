@@ -2,9 +2,8 @@ import React from "react";
 import { Feather } from "@expo/vector-icons";
 import { useTheme } from "styled-components";
 
-import { ICartGame } from "../../store/slices/cart";
-
 import { formatCurrencyToBRL } from "../../shared/utils";
+import { ICartGame } from "../../shared/types";
 
 import * as S from "./styles";
 

@@ -21,8 +21,8 @@ import { useReduxDispatch, useReduxSelector } from "../../shared/hooks";
 
 import { fetchUserBets } from "../../store/slices/bets/actions";
 import { selectBets } from "../../store/slices/bets/selectors";
-import { IBet } from "../../store/slices/bets";
-import { IApiGames } from "../../store/slices/games";
+
+import { IApiGames, IBet } from "../../shared/types";
 
 import * as S from "./styles";
 
@@ -36,8 +36,8 @@ export function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [filteredBets, setFilteredBets] = useState<IBet[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const bets = useReduxSelector(selectBets);
 
+  const bets = useReduxSelector(selectBets);
   const dispatch = useReduxDispatch();
 
   const betsTypes = useMemo(() => {

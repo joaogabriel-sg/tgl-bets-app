@@ -1,11 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import axios, { AxiosError } from "axios";
 
 import { api } from "../../../../shared/services";
 
 import { clearCart } from "../index";
 
-import { AppDispatch, ReduxStore } from "../../../types";
-import axios, { AxiosError } from "axios";
+import { IAsyncThunkConfig } from "../../../../shared/types";
 
 interface INewBet {
   id: number;
@@ -16,15 +16,10 @@ interface ISaveNewBetProps {
   games: INewBet[];
 }
 
-type AsyncThunkConfig = {
-  state: ReduxStore;
-  dispatch: AppDispatch;
-};
-
 export const saveNewBet = createAsyncThunk<
   void,
   ISaveNewBetProps,
-  AsyncThunkConfig
+  IAsyncThunkConfig
 >("@cart/saveNewBet", async (newBet, thunkApi) => {
   try {
     await api.post("/bet/new-bet", newBet);

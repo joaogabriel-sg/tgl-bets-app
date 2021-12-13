@@ -3,7 +3,7 @@ import { FlatList, FlatListProps } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { RectButton } from "react-native-gesture-handler";
 
-import { ICartGame } from "../../store/slices/cart";
+import { ICartGame } from "../../shared/types";
 
 export const Container = styled.View`
   flex: 1;

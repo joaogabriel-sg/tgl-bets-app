@@ -1,23 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export interface ITypeOfGames {
-  id: number;
-  type: string;
-  description: string;
-  range: number;
-  price: number;
-  max_number: 15;
-  color: string;
-}
-
-export interface IApiGames {
-  min_cart_value: number;
-  types: ITypeOfGames[];
-}
+import { IApiGames, ITypeOfGame } from "../../../shared/types";
 
 interface IInitialState {
   minCartValue: number;
-  games: ITypeOfGames[];
+  games: ITypeOfGame[];
 }
 
 const initialState: IInitialState = {

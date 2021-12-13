@@ -3,16 +3,11 @@ import axios, { AxiosError } from "axios";
 
 import { api } from "../../../../shared/services";
 
-import { IBet, setBets } from "..";
-import { IApiGames } from "../../games";
-import { AppDispatch, ReduxStore } from "../../../types";
+import { setBets } from "..";
 
-type AsyncThunkConfig = {
-  state: ReduxStore;
-  dispatch: AppDispatch;
-};
+import { IAsyncThunkConfig, IApiGames, IBet } from "../../../../shared/types";
 
-export const fetchUserBets = createAsyncThunk<void, void, AsyncThunkConfig>(
+export const fetchUserBets = createAsyncThunk<void, void, IAsyncThunkConfig>(
   "@bets/fetchUserBets",
   async (_, thunkApi) => {
     try {

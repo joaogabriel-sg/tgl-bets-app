@@ -4,7 +4,7 @@ import { FlatList, FlatListProps, Platform } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 
-import { ITypeOfGames } from "../../store/slices/games";
+import { ITypeOfGame } from "../../shared/types";
 
 export const Container = styled.View`
   flex: 1;
@@ -48,7 +48,7 @@ export const SectionTitle = styled.Text`
 `;
 
 export const Games = styled(
-  FlatList as new (props: FlatListProps<ITypeOfGames>) => FlatList<ITypeOfGames>
+  FlatList as new (props: FlatListProps<ITypeOfGame>) => FlatList<ITypeOfGame>
 ).attrs({
   horizontal: true,
   showsHorizontalScrollIndicator: false,

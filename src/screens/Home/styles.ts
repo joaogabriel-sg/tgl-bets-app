@@ -2,8 +2,8 @@ import styled, { css } from "styled-components/native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { FlatList, FlatListProps } from "react-native";
 
-import { IBet } from "../../store/slices/bets";
 import { IBetType } from ".";
+import { IBet } from "../../shared/types";
 
 export const Container = styled.View`
   flex: 1;
