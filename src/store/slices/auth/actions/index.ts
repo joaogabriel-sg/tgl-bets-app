@@ -18,6 +18,11 @@ interface IUpdatedUser {
   email: string;
 }
 
+interface IUpdatedUserApi {
+  email: string;
+  name: string;
+}
+
 interface ILoginData {
   email: string;
   password: string;
@@ -66,15 +71,18 @@ export const updateUserData = createAsyncThunk<
   IAsyncThunkConfig
 >("@auth/updateUser", async (updatedUser, thunkApi) => {
   try {
-    const { data } = await api.put<IApiUser>("/user/update", updatedUser);
+    const { data } = await api.put<IUpdatedUserApi>(
+      "/user/update",
+      updatedUser
+    );
 
     const currentAuthentication = thunkApi.getState().auth;
 
     const updatedAuthenticatedUser = {
       user: {
-        id: data.user.id,
-        name: data.user.name,
-        email: data.user.email,
+        id: currentAuthentication.user!.id,
+        name: data.name,
+        email: data.email,
       },
       token: {
         token: currentAuthentication.token!,
