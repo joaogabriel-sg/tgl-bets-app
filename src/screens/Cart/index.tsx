@@ -46,9 +46,22 @@ export function Cart({ handleCloseCart }: Props) {
 
   async function handleSaveCartGames() {
     try {
-      setIsLoading(true);
+      if (cartTotalValue < minCartValue) {
+        setTimeout(() => {
+          Alert.alert(
+            "Oops...",
+            `Your cart must have a total price greater than ${formatCurrencyToBRL(
+              minCartValue
+            )}.`
+          );
+        }, 0);
 
-      if (cartTotalValue < minCartValue) return;
+        setIsLoading(false);
+        handleCloseCart();
+        return;
+      }
+
+      setIsLoading(true);
 
       const newBet = {
         games: cartGames.map((cartGame) => ({

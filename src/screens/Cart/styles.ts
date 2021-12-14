@@ -1,7 +1,6 @@
 import styled, { css } from "styled-components/native";
 import { FlatList, FlatListProps } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
-import { RectButton } from "react-native-gesture-handler";
 
 import { ICartGame } from "../../shared/types";
 
@@ -68,7 +67,7 @@ export const Total = styled.Text`
   `}
 `;
 
-export const SaveButton = styled(RectButton)`
+export const SaveButton = styled.TouchableOpacity`
   background: ${({ theme }) => theme.colors.background_secondary};
   width: 100%;
   height: ${RFValue(96)}px;

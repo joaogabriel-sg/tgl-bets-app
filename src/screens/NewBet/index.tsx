@@ -68,9 +68,21 @@ export function NewBet() {
         return sortArray(filteredNumbers);
       }
 
-      if (selectedGame && selectedGame.max_number > prevSelectedNumbers.length)
+      if (!selectedGame) {
+        Alert.alert(
+          `Oops...you didn't select a game!`,
+          `Please select a game to continue.`
+        );
+        return prevSelectedNumbers;
+      }
+
+      if (selectedGame.max_number > prevSelectedNumbers.length)
         return sortArray([...prevSelectedNumbers, number]);
 
+      Alert.alert(
+        "Oops...",
+        `You have already selected ${selectedGame.max_number} number.`
+      );
       return prevSelectedNumbers;
     });
   }
@@ -78,7 +90,16 @@ export function NewBet() {
   function handleAddToCart() {
     if (!selectedGame) return;
 
-    if (selectedNumbers.length !== selectedGame.max_number) return;
+    const remainingQuantity = selectedGame.max_number - selectedNumbers.length;
+
+    if (remainingQuantity !== 0) {
+      const numbersWord = remainingQuantity === 1 ? "number" : "numbers";
+      Alert.alert(
+        "Incomplete bet!",
+        `Please select ${remainingQuantity} ${numbersWord}.`
+      );
+      return;
+    }
 
     const newCartGame = {
       id: uuid.v4().toString(),
