@@ -11,6 +11,7 @@ import { clearBets } from "../../bets";
 import { clearGames } from "../../games";
 
 import { IAsyncThunkConfig, IBet } from "../../../../shared/types";
+import { parseISO } from "date-fns";
 
 interface INewUser {
   name: string;
@@ -57,6 +58,8 @@ interface IApiUserAccount {
 
 const tglBetsUserTokenKey = "@tglBets:userToken";
 
+let expirationTimer: NodeJS.Timeout;
+
 export const createNewUser = createAsyncThunk<
   void,
   INewUser,
@@ -82,6 +85,14 @@ export const createNewUser = createAsyncThunk<
     api.defaults.headers.common = {
       Authorization: `Bearer ${createdNewUser.token.token}`,
     };
+
+    const currentTime = parseISO(new Date().toISOString()).getTime();
+    const expirationAtTime = parseISO(
+      createdNewUser.token.expires_at
+    ).getTime();
+    const expirationTime = expirationAtTime - currentTime;
+
+    thunkApi.dispatch(setLogoutTimer(expirationTime));
   } catch (error) {
     let errorMessage = "Something went wrong, please contact our support!";
 
@@ -158,6 +169,12 @@ export const loginUser = createAsyncThunk<void, ILoginData, IAsyncThunkConfig>(
       api.defaults.headers.common = {
         Authorization: `Bearer ${userData.token.token}`,
       };
+
+      const currentTime = parseISO(new Date().toISOString()).getTime();
+      const expirationAtTime = parseISO(userData.token.expires_at).getTime();
+      const expirationTime = expirationAtTime - currentTime;
+
+      thunkApi.dispatch(setLogoutTimer(expirationTime));
     } catch (error: any) {
       let errorMessage = "Something went wrong, please contact our support!";
 
@@ -199,6 +216,12 @@ export const loadUserStorageData = createAsyncThunk<
 
   thunkApi.dispatch(authenticate(user));
   saveUserToStorage(user.token);
+
+  const currentTime = parseISO(new Date().toISOString()).getTime();
+  const expirationAtTime = parseISO(user.token.expires_at).getTime();
+  const expirationTime = expirationAtTime - currentTime;
+
+  thunkApi.dispatch(setLogoutTimer(expirationTime));
   return;
 });
 
@@ -214,8 +237,22 @@ export const logoutUser = createAsyncThunk<void, void, IAsyncThunkConfig>(
     thunkApi.dispatch(clearBets());
     thunkApi.dispatch(clearGames());
     removeUserFromStorage();
+    clearLogoutTimer();
   }
 );
+
+const setLogoutTimer = createAsyncThunk<void, number, IAsyncThunkConfig>(
+  "@auto/setLogoutTimer",
+  async (expirationTime, thunkApi) => {
+    expirationTimer = setTimeout(() => {
+      thunkApi.dispatch(logoutUser());
+    }, expirationTime);
+  }
+);
+
+function clearLogoutTimer() {
+  if (expirationTimer) clearTimeout(expirationTimer);
+}
 
 function saveUserToStorage(token: IToken) {
   AsyncStorage.setItem(tglBetsUserTokenKey, JSON.stringify(token));
