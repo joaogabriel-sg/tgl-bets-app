@@ -1,7 +1,12 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { Authentication, Registration, ResetPassword } from "../screens";
+import {
+  Authentication,
+  ChangePassword,
+  Registration,
+  ResetPassword,
+} from "../screens";
 
 import { RootStackParamList } from "./types";
 
@@ -13,6 +18,7 @@ export function AuthRoutes() {
       <AuthStack.Screen name="Authentication" component={Authentication} />
       <AuthStack.Screen name="Registration" component={Registration} />
       <AuthStack.Screen name="ResetPassword" component={ResetPassword} />
+      <AuthStack.Screen name="ChangePassword" component={ChangePassword} />
     </AuthStack.Navigator>
   );
 }
