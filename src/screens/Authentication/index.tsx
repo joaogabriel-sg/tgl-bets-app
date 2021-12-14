@@ -15,16 +15,13 @@ import {
   HelperButton,
   InputForm,
   Loading,
-} from "../../components";
+} from "@components";
 
-import { RootStackParamList } from "../../routes";
+import { RootStackParamList } from "@routes";
 
-import { useReduxDispatch } from "../../shared/hooks";
+import { useReduxDispatch } from "@shared/hooks";
 
-import {
-  loadUserStorageData,
-  loginUser,
-} from "../../store/slices/auth/actions";
+import { loadUserStorageData, loginUser } from "@store/slices/auth/actions";
 
 import * as S from "./styles";
 

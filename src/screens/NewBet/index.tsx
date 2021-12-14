@@ -11,16 +11,16 @@ import {
   Footer,
   Loading,
   ScreenTitle,
-} from "../../components";
+} from "@components";
 
-import { useReduxDispatch, useReduxSelector } from "../../shared/hooks";
+import { useReduxDispatch, useReduxSelector } from "@shared/hooks";
 
-import { fetchGames } from "../../store/slices/games/actions";
-import { selectGames } from "../../store/slices/games/selectors";
-import { addToCart } from "../../store/slices/cart";
+import { fetchGames } from "@store/slices/games/actions";
+import { selectGames } from "@store/slices/games/selectors";
+import { addToCart } from "@store/slices/cart";
 
-import { sortArray } from "../../shared/utils";
-import { ITypeOfGame } from "../../shared/types";
+import { sortArray } from "@shared/utils";
+import { ITypeOfGame } from "@shared/types";
 
 import * as S from "./styles";
 

@@ -7,10 +7,10 @@ import {
   DrawerItemList,
 } from "@react-navigation/drawer";
 
-import { useReduxDispatch, useReduxSelector } from "../../shared/hooks";
+import { useReduxDispatch, useReduxSelector } from "@shared/hooks";
 
-import { selectUser } from "../../store/slices/auth/selectors";
-import { logoutUser } from "../../store/slices/auth/actions";
+import { selectUser } from "@store/slices/auth/selectors";
+import { logoutUser } from "@store/slices/auth/actions";
 
 import * as S from "./styles";
 

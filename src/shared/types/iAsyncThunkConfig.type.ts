@@ -1,4 +1,4 @@
-import { AppDispatch, ReduxStore } from "../../store/types";
+import { AppDispatch, ReduxStore } from "@store/types";
 
 export interface IAsyncThunkConfig {
   state: ReduxStore;

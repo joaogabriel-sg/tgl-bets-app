@@ -19,13 +19,12 @@ import {
   Footer,
   InputForm,
   Loading,
-} from "../../components";
+} from "@components";
 
-import { RootStackParamList } from "../../routes";
+import { RootStackParamList } from "@routes";
 
-import { useReduxDispatch } from "../../shared/hooks";
-
-import { api } from "../../shared/services";
+import { useReduxDispatch } from "@shared/hooks";
+import { api } from "@shared/services";
 
 import * as S from "./styles";
 

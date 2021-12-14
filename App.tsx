@@ -16,11 +16,11 @@ import {
 import { Provider } from "react-redux";
 import { ThemeProvider } from "styled-components";
 
-import { Routes } from "./src/routes";
+import { Routes } from "@routes";
 
-import { store } from "./src/store";
+import { store } from "@store";
 
-import { theme } from "./src/shared/styles";
+import { theme } from "@shared/styles";
 
 LogBox.ignoreLogs(["Setting a timer", "If you want to use Reanimated 2"]);
 

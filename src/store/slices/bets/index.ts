@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { IBet } from "../../../shared/types";
+import { IBet } from "@shared/types";
 
 interface IInitialState {
   bets: IBet[];

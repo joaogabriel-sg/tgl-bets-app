@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { IApiGames, ITypeOfGame } from "../../../shared/types";
+import { IApiGames, ITypeOfGame } from "@shared/types";
 
 interface IInitialState {
   minCartValue: number;

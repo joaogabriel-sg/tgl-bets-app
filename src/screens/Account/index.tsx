@@ -12,12 +12,12 @@ import {
   InputForm,
   Loading,
   ScreenTitle,
-} from "../../components";
+} from "@components";
 
-import { useReduxDispatch, useReduxSelector } from "../../shared/hooks";
+import { useReduxDispatch, useReduxSelector } from "@shared/hooks";
 
-import { selectUser } from "../../store/slices/auth/selectors";
-import { updateUserData } from "../../store/slices/auth/actions";
+import { selectUser } from "@store/slices/auth/selectors";
+import { updateUserData } from "@store/slices/auth/actions";
 
 import * as S from "./styles";
 

@@ -1,11 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 
-import { api } from "../../../../shared/services";
+import { api } from "@shared/services";
+import { IAsyncThunkConfig, IApiGames } from "@shared/types";
 
-import { setGames } from "../index";
-
-import { IAsyncThunkConfig, IApiGames } from "../../../../shared/types";
+import { setGames } from "..";
 
 export const fetchGames = createAsyncThunk<void, void, IAsyncThunkConfig>(
   "@games/fetchGames",

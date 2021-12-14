@@ -14,13 +14,13 @@ import {
   Footer,
   InputForm,
   Loading,
-} from "../../components";
+} from "@components";
 
-import { RootStackParamList } from "../../routes";
+import { RootStackParamList } from "@routes";
 
-import { useReduxDispatch } from "../../shared/hooks";
+import { useReduxDispatch } from "@shared/hooks";
 
-import { createNewUser } from "../../store/slices/auth/actions";
+import { createNewUser } from "@store/slices/auth/actions";
 
 import * as S from "./styles";
 

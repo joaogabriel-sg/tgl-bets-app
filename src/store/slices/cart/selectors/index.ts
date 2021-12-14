@@ -1,4 +1,4 @@
-import { ReduxStore } from "../../../types";
+import { ReduxStore } from "@store/types";
 
 export const selectCartGames = (state: ReduxStore) => state.cart.cartGames;
 

@@ -4,7 +4,7 @@ import { Feather } from "@expo/vector-icons";
 import { RFValue } from "react-native-responsive-fontsize";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 
-import { RootStackParamList } from "../../routes";
+import { RootStackParamList } from "@routes";
 
 import * as S from "./styles";
 

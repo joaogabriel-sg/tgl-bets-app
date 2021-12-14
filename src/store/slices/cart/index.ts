@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ICartGame } from "../../../shared/types";
+import { ICartGame } from "@shared/types";
 
 interface IInitialState {
   cartGames: ICartGame[];
