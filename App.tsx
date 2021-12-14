@@ -4,7 +4,7 @@ import "intl/locale-data/jsonp/pt-BR";
 import "react-native-gesture-handler";
 
 import React from "react";
-import { StatusBar } from "react-native";
+import { LogBox, StatusBar } from "react-native";
 import AppLoading from "expo-app-loading";
 import {
   useFonts,
@@ -21,6 +21,8 @@ import { Routes } from "./src/routes";
 import { store } from "./src/store";
 
 import { theme } from "./src/shared/styles";
+
+LogBox.ignoreLogs(["Setting a timer", "If you want to use Reanimated 2"]);
 
 export default function App() {
   const [fontsLoaded] = useFonts({
