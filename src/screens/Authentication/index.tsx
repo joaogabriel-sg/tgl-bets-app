@@ -21,7 +21,10 @@ import { RootStackParamList } from "../../routes";
 
 import { useReduxDispatch } from "../../shared/hooks";
 
-import { loginUser } from "../../store/slices/auth/actions";
+import {
+  loadUserStorageData,
+  loginUser,
+} from "../../store/slices/auth/actions";
 
 import * as S from "./styles";
 
@@ -46,8 +49,7 @@ const schema = yup.object().shape({
 });
 
 export function Authentication() {
-  const [isLoading, setIsLoading] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(true);
   const containerRef = useRef<ScrollView>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
@@ -87,6 +89,18 @@ export function Authentication() {
     });
 
     return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    async function getStorageUserData() {
+      try {
+        await dispatch(loadUserStorageData()).unwrap();
+      } catch {
+        setIsLoading(false);
+      }
+    }
+
+    getStorageUserData();
   }, []);
 
   return (

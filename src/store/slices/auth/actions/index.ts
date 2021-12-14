@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { api } from "../../../../shared/services";
 
@@ -9,7 +10,7 @@ import { clearCart } from "../../cart";
 import { clearBets } from "../../bets";
 import { clearGames } from "../../games";
 
-import { IAsyncThunkConfig } from "../../../../shared/types";
+import { IAsyncThunkConfig, IBet } from "../../../../shared/types";
 
 interface INewUser {
   name: string;
@@ -23,14 +24,38 @@ interface IUpdatedUser {
 }
 
 interface IUpdatedUserApi {
-  email: string;
   name: string;
+  email: string;
 }
 
 interface ILoginData {
   email: string;
   password: string;
 }
+
+interface IApiUserAccountBet {
+  id: number;
+  choosen_numbers: string;
+  user_id: number;
+  game_id: number;
+  price: number;
+  created_at: string;
+}
+
+interface IToken {
+  token: string;
+  expires_at: string;
+}
+
+interface IApiUserAccount {
+  id: number;
+  email: string;
+  name: string;
+  token: string;
+  bets: IApiUserAccountBet[];
+}
+
+const tglBetsUserTokenKey = "@tglBets:userToken";
 
 export const createNewUser = createAsyncThunk<
   void,
@@ -53,6 +78,7 @@ export const createNewUser = createAsyncThunk<
     };
 
     thunkApi.dispatch(authenticate(createdNewUser));
+    saveUserToStorage(createdNewUser.token);
     api.defaults.headers.common = {
       Authorization: `Bearer ${createdNewUser.token.token}`,
     };
@@ -95,6 +121,7 @@ export const updateUserData = createAsyncThunk<
     };
 
     thunkApi.dispatch(authenticate(updatedAuthenticatedUser));
+    saveUserToStorage(updatedAuthenticatedUser.token);
   } catch (error) {
     let errorMessage = "Something went wrong, please contact our support!";
 
@@ -127,6 +154,7 @@ export const loginUser = createAsyncThunk<void, ILoginData, IAsyncThunkConfig>(
       };
 
       thunkApi.dispatch(authenticate(userData));
+      saveUserToStorage(userData.token);
       api.defaults.headers.common = {
         Authorization: `Bearer ${userData.token.token}`,
       };
@@ -143,6 +171,37 @@ export const loginUser = createAsyncThunk<void, ILoginData, IAsyncThunkConfig>(
   }
 );
 
+export const loadUserStorageData = createAsyncThunk<
+  void,
+  void,
+  IAsyncThunkConfig
+>("@auth/loadUserStorageData", async (_, thunkApi) => {
+  const storageUserToken = await AsyncStorage.getItem(tglBetsUserTokenKey);
+
+  if (!storageUserToken) throw new Error("");
+
+  const storageData = JSON.parse(storageUserToken) as IToken;
+
+  api.defaults.headers.common = {
+    Authorization: `Bearer ${storageData.token}`,
+  };
+
+  const { data } = await api.get<IApiUserAccount>("/user/my-account");
+
+  const user: IApiUser = {
+    user: {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+    },
+    token: storageData,
+  };
+
+  thunkApi.dispatch(authenticate(user));
+  saveUserToStorage(user.token);
+  return;
+});
+
 export const logoutUser = createAsyncThunk<void, void, IAsyncThunkConfig>(
   "@auth/logoutUser",
   async (_, thunkApi) => {
@@ -154,5 +213,14 @@ export const logoutUser = createAsyncThunk<void, void, IAsyncThunkConfig>(
     thunkApi.dispatch(clearCart());
     thunkApi.dispatch(clearBets());
     thunkApi.dispatch(clearGames());
+    removeUserFromStorage();
   }
 );
+
+function saveUserToStorage(token: IToken) {
+  AsyncStorage.setItem(tglBetsUserTokenKey, JSON.stringify(token));
+}
+
+function removeUserFromStorage() {
+  AsyncStorage.removeItem(tglBetsUserTokenKey);
+}
