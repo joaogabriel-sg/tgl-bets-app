@@ -1,4 +1,4 @@
-import { ReduxStore } from "../../../types";
+import { ReduxStore } from "@store/types";
 
 export const selectUser = (state: ReduxStore) => state.auth.user;
 

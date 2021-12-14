@@ -5,22 +5,22 @@ import { useTheme } from "styled-components";
 import { RFValue } from "react-native-responsive-fontsize";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 
-import { CartGame, Loading, ScreenTitle } from "../../components";
+import { CartGame, Loading, ScreenTitle } from "@components";
 
-import EmptyGamesSvg from "../../shared/assets/empty-games.svg";
+import EmptyGamesSvg from "@shared/assets/empty-games.svg";
 
-import { RootStackParamList } from "../../routes";
+import { RootStackParamList } from "@routes";
 
-import { useReduxDispatch, useReduxSelector } from "../../shared/hooks";
-import { formatCurrencyToBRL } from "../../shared/utils";
+import { useReduxDispatch, useReduxSelector } from "@shared/hooks";
+import { formatCurrencyToBRL } from "@shared/utils";
 
 import {
   selectCartGames,
   selectCartTotalValue,
-} from "../../store/slices/cart/selectors";
-import { selectMinCartValue } from "../../store/slices/games/selectors";
-import { removeFromCart } from "../../store/slices/cart";
-import { saveNewBet } from "../../store/slices/cart/actions";
+} from "@store/slices/cart/selectors";
+import { selectMinCartValue } from "@store/slices/games/selectors";
+import { removeFromCart } from "@store/slices/cart";
+import { saveNewBet } from "@store/slices/cart/actions";
 
 import * as S from "./styles";
 

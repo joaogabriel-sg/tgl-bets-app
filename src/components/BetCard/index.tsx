@@ -1,8 +1,8 @@
 import React from "react";
 import { format, parseISO } from "date-fns";
 
-import { formatCurrencyToBRL } from "../../shared/utils";
-import { IBet } from "../../shared/types";
+import { formatCurrencyToBRL } from "@shared/utils";
+import { IBet } from "@shared/types";
 
 import * as S from "./styles";
 

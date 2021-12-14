@@ -6,7 +6,7 @@ import {
   ChangePassword,
   Registration,
   ResetPassword,
-} from "../screens";
+} from "@screens";
 
 import { RootStackParamList } from "./types";
 

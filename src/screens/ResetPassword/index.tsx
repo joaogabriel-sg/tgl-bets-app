@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, ScrollView } from "react-native";
+import axios, { AxiosError } from "axios";
 
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 
@@ -14,13 +15,13 @@ import {
   Footer,
   InputForm,
   Loading,
-} from "../../components";
+} from "@components";
 
-import { RootStackParamList } from "../../routes";
+import { RootStackParamList } from "@routes";
+
+import { api } from "@shared/services";
 
 import * as S from "./styles";
-import { api } from "../../shared/services";
-import axios, { AxiosError } from "axios";
 
 interface FormData {
   email: string;

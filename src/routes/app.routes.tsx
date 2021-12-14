@@ -3,8 +3,8 @@ import { useTheme } from "styled-components";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { Ionicons } from "@expo/vector-icons";
 
-import { Account, Home, NewBet } from "../screens";
-import { CustomDrawer } from "../components";
+import { Account, Home, NewBet } from "@screens";
+import { CustomDrawer } from "@components";
 
 import { RootStackParamList } from "./types";
 

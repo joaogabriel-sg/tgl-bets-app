@@ -11,18 +11,16 @@ import {
   Loading,
   NewBetButton,
   ScreenTitle,
-} from "../../components";
+} from "@components";
 
-import EmptyGamesSvg from "../../shared/assets/empty-games.svg";
+import EmptyGamesSvg from "@shared/assets/empty-games.svg";
 
-import { api } from "../../shared/services";
+import { api } from "@shared/services";
+import { useReduxDispatch, useReduxSelector } from "@shared/hooks";
+import { IBet } from "@shared/types";
 
-import { useReduxDispatch, useReduxSelector } from "../../shared/hooks";
-
-import { fetchUserBets } from "../../store/slices/bets/actions";
-import { selectBets } from "../../store/slices/bets/selectors";
-
-import { IBet } from "../../shared/types";
+import { fetchUserBets } from "@store/slices/bets/actions";
+import { selectBets } from "@store/slices/bets/selectors";
 
 import * as S from "./styles";
 

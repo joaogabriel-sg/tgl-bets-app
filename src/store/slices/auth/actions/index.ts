@@ -3,15 +3,14 @@ import axios, { AxiosError } from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { parseISO } from "date-fns";
 
-import { api } from "../../../../shared/services";
+import { api } from "@shared/services";
+import { IAsyncThunkConfig } from "@shared/types";
 
-import { authenticate, IApiUser, logout } from "../index";
+import { authenticate, IApiUser, logout } from "..";
 
-import { clearCart } from "../../cart";
-import { clearBets } from "../../bets";
-import { clearGames } from "../../games";
-
-import { IAsyncThunkConfig } from "../../../../shared/types";
+import { clearCart } from "@store/slices/cart";
+import { clearBets } from "@store/slices/bets";
+import { clearGames } from "@store/slices/games";
 
 interface ILoginData {
   email: string;

@@ -3,7 +3,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { FlatList, FlatListProps } from "react-native";
 
 import { IBetType } from ".";
-import { IBet } from "../../shared/types";
+import { IBet } from "@shared/types";
 
 export const Container = styled.View`
   flex: 1;

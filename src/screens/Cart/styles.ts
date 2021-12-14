@@ -2,7 +2,7 @@ import styled, { css } from "styled-components/native";
 import { FlatList, FlatListProps } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 
-import { ICartGame } from "../../shared/types";
+import { ICartGame } from "@shared/types";
 
 export const Container = styled.View`
   flex: 1;

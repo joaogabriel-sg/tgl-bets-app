@@ -1,4 +1,4 @@
-import { ReduxStore } from "../../../types";
+import { ReduxStore } from "@store/types";
 
 export const selectMinCartValue = (state: ReduxStore) =>
   state.games.minCartValue;

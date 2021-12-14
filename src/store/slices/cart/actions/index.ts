@@ -1,11 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 
-import { api } from "../../../../shared/services";
+import { api } from "@shared/services";
+import { IAsyncThunkConfig } from "@shared/types";
 
-import { clearCart } from "../index";
-
-import { IAsyncThunkConfig } from "../../../../shared/types";
+import { clearCart } from "..";
 
 interface INewBet {
   id: number;

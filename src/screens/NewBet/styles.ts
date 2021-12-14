@@ -4,7 +4,7 @@ import { FlatList, FlatListProps, Platform } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 
-import { ITypeOfGame } from "../../shared/types";
+import { ITypeOfGame } from "@shared/types";
 
 export const Container = styled.View`
   flex: 1;
