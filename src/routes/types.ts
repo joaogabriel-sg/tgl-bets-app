@@ -2,6 +2,7 @@ type AuthStackParamList = {
   Authentication: undefined;
   Registration: undefined;
   ResetPassword: undefined;
+  ChangePassword: { token: string };
 };
 
 type AppDrawerParamList = {
