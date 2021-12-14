@@ -1,6 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Alert, ScrollView, TextInput } from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -8,9 +10,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import {
   AuthHeader,
   Button,
+  Card,
   Footer,
   HelperButton,
   InputForm,
+  Loading,
 } from "../../components";
 
 import { RootStackParamList } from "../../routes";
@@ -25,8 +29,6 @@ interface FormData {
   email: string;
   password: string;
 }
-
-type Props = NativeStackScreenProps<RootStackParamList, "Authentication">;
 
 const schema = yup.object().shape({
   email: yup
@@ -43,9 +45,13 @@ const schema = yup.object().shape({
     ),
 });
 
-export function Authentication({ navigation }: Props) {
+export function Authentication() {
+  const [isLoading, setIsLoading] = useState(false);
+
   const containerRef = useRef<ScrollView>(null);
   const passwordInputRef = useRef<TextInput>(null);
+
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const dispatch = useReduxDispatch();
 
@@ -53,7 +59,6 @@ export function Authentication({ navigation }: Props) {
     control,
     formState: { errors },
     handleSubmit,
-    reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -68,10 +73,11 @@ export function Authentication({ navigation }: Props) {
 
   async function handleAuthenticate(data: FormData) {
     try {
+      setIsLoading(true);
       await dispatch(loginUser(data)).unwrap();
-      reset();
     } catch (err: any) {
       Alert.alert(err.message, "", [{ text: "Okay" }]);
+      setIsLoading(false);
     }
   }
 
@@ -84,35 +90,41 @@ export function Authentication({ navigation }: Props) {
   }, []);
 
   return (
-    <S.Container ref={containerRef}>
+    <S.Container ref={containerRef} scrollEnabled={!isLoading}>
+      {isLoading && <Loading />}
+
       <S.Content>
         <AuthHeader screenTitle="Authentication" />
 
-        <S.Form>
-          <InputForm
-            name="email"
-            control={control}
-            error={errors.email && errors.email.message}
-            placeholder="Email"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-            blurOnSubmit={false}
-            returnKeyType="next"
-            onSubmitEditing={() => {
-              passwordInputRef.current?.focus();
-            }}
-          />
+        <Card>
+          <S.InputWrapper>
+            <InputForm
+              name="email"
+              control={control}
+              error={errors.email && errors.email.message}
+              placeholder="Email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              blurOnSubmit={false}
+              returnKeyType="next"
+              onSubmitEditing={() => {
+                passwordInputRef.current?.focus();
+              }}
+            />
+          </S.InputWrapper>
 
-          <InputForm
-            name="password"
-            control={control}
-            error={errors.password && errors.password.message}
-            placeholder="Password"
-            secureTextEntry
-            ref={passwordInputRef}
-            onSubmitEditing={handleSubmit(handleAuthenticate)}
-          />
+          <S.InputWrapper>
+            <InputForm
+              name="password"
+              control={control}
+              error={errors.password && errors.password.message}
+              placeholder="Password"
+              secureTextEntry
+              ref={passwordInputRef}
+              onSubmitEditing={handleSubmit(handleAuthenticate)}
+            />
+          </S.InputWrapper>
 
           <HelperButton
             title="I forget my password"
@@ -124,7 +136,7 @@ export function Authentication({ navigation }: Props) {
             title="Log in"
             onPress={handleSubmit(handleAuthenticate)}
           />
-        </S.Form>
+        </Card>
 
         <Button title="Sign Up" onPress={handleNavigateToRegistration} />
       </S.Content>

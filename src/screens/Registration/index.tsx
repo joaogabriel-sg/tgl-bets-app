@@ -1,11 +1,20 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Alert, ScrollView, TextInput } from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import { AuthHeader, Button, Footer, InputForm } from "../../components";
+import {
+  AuthHeader,
+  Button,
+  Card,
+  Footer,
+  InputForm,
+  Loading,
+} from "../../components";
 
 import { RootStackParamList } from "../../routes";
 
@@ -20,8 +29,6 @@ interface FormData {
   email: string;
   password: string;
 }
-
-type Props = NativeStackScreenProps<RootStackParamList, "Authentication">;
 
 const schema = yup.object().shape({
   name: yup.string().required("Name is required!"),
@@ -39,10 +46,14 @@ const schema = yup.object().shape({
     ),
 });
 
-export function Registration({ navigation }: Props) {
+export function Registration() {
+  const [isLoading, setIsLoading] = useState(false);
+
   const containerRef = useRef<ScrollView>(null);
   const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
+
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const dispatch = useReduxDispatch();
 
@@ -50,7 +61,6 @@ export function Registration({ navigation }: Props) {
     control,
     formState: { errors },
     handleSubmit,
-    reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -61,10 +71,11 @@ export function Registration({ navigation }: Props) {
 
   async function handleRegisterNewUser(data: FormData) {
     try {
+      setIsLoading(true);
       await dispatch(createNewUser(data)).unwrap();
-      reset();
     } catch (err: any) {
       Alert.alert(err.message, "", [{ text: "Okay" }]);
+      setIsLoading(false);
     }
   }
 
@@ -77,54 +88,62 @@ export function Registration({ navigation }: Props) {
   }, []);
 
   return (
-    <S.Container ref={containerRef}>
+    <S.Container ref={containerRef} scrollEnabled={!isLoading}>
+      {isLoading && <Loading />}
+
       <S.Content>
         <AuthHeader screenTitle="Registration" />
 
-        <S.Form>
-          <InputForm
-            name="name"
-            control={control}
-            error={errors.name && errors.name.message}
-            placeholder="Name"
-            keyboardType="default"
-            returnKeyType="next"
-            blurOnSubmit={false}
-            onSubmitEditing={() => {
-              emailInputRef.current?.focus();
-            }}
-          />
+        <Card>
+          <S.InputWrapper>
+            <InputForm
+              name="name"
+              control={control}
+              error={errors.name && errors.name.message}
+              placeholder="Name"
+              keyboardType="default"
+              returnKeyType="next"
+              blurOnSubmit={false}
+              onSubmitEditing={() => {
+                emailInputRef.current?.focus();
+              }}
+            />
+          </S.InputWrapper>
 
-          <InputForm
-            name="email"
-            control={control}
-            error={errors.email && errors.email.message}
-            placeholder="Email"
-            keyboardType="email-address"
-            ref={emailInputRef}
-            returnKeyType="next"
-            blurOnSubmit={false}
-            onSubmitEditing={() => {
-              passwordInputRef.current?.focus();
-            }}
-          />
+          <S.InputWrapper>
+            <InputForm
+              name="email"
+              control={control}
+              error={errors.email && errors.email.message}
+              placeholder="Email"
+              keyboardType="email-address"
+              ref={emailInputRef}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              onSubmitEditing={() => {
+                passwordInputRef.current?.focus();
+              }}
+            />
+          </S.InputWrapper>
 
-          <InputForm
-            name="password"
-            control={control}
-            error={errors.password && errors.password.message}
-            placeholder="Password"
-            secureTextEntry
-            ref={passwordInputRef}
-            onSubmitEditing={handleSubmit(handleRegisterNewUser)}
-          />
+          <S.InputWrapper>
+            <InputForm
+              name="password"
+              control={control}
+              error={errors.password && errors.password.message}
+              placeholder="Password"
+              secureTextEntry
+              ref={passwordInputRef}
+              onSubmitEditing={handleSubmit(handleRegisterNewUser)}
+            />
+          </S.InputWrapper>
 
           <Button
             isPrimary
             title="Register"
             onPress={handleSubmit(handleRegisterNewUser)}
           />
-        </S.Form>
+        </Card>
 
         <Button title="Back" arrowPosition="left" onPress={handleGoBack} />
       </S.Content>

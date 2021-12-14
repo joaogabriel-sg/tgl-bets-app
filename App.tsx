@@ -1,4 +1,10 @@
+import "intl";
+import "intl/locale-data/jsonp/pt-BR";
+
+import "react-native-gesture-handler";
+
 import React from "react";
+import { StatusBar } from "react-native";
 import AppLoading from "expo-app-loading";
 import {
   useFonts,
@@ -29,6 +35,11 @@ export default function App() {
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor={theme.colors.primary}
+          translucent
+        />
         <Routes />
       </ThemeProvider>
     </Provider>
