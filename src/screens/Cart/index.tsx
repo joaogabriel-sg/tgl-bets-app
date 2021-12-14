@@ -46,7 +46,7 @@ export function Cart({ handleCloseCart }: Props) {
 
   async function handleSaveCartGames() {
     try {
-      if (cartTotalValue < minCartValue) {
+      if (cartTotalValue <= minCartValue) {
         setTimeout(() => {
           Alert.alert(
             "Oops...",
