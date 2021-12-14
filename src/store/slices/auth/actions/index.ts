@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { parseISO } from "date-fns";
 
 import { api } from "../../../../shared/services";
 
@@ -10,8 +11,12 @@ import { clearCart } from "../../cart";
 import { clearBets } from "../../bets";
 import { clearGames } from "../../games";
 
-import { IAsyncThunkConfig, IBet } from "../../../../shared/types";
-import { parseISO } from "date-fns";
+import { IAsyncThunkConfig } from "../../../../shared/types";
+
+interface ILoginData {
+  email: string;
+  password: string;
+}
 
 interface INewUser {
   name: string;
@@ -24,17 +29,12 @@ interface IUpdatedUser {
   email: string;
 }
 
-interface IUpdatedUserApi {
+interface IUpdatedUserApiResponse {
   name: string;
   email: string;
 }
 
-interface ILoginData {
-  email: string;
-  password: string;
-}
-
-interface IApiUserAccountBet {
+interface IUserAccountBetApiResponse {
   id: number;
   choosen_numbers: string;
   user_id: number;
@@ -43,22 +43,22 @@ interface IApiUserAccountBet {
   created_at: string;
 }
 
+interface IUserAccountApiResponse {
+  id: number;
+  email: string;
+  name: string;
+  token: string;
+  bets: IUserAccountBetApiResponse[];
+}
+
 interface IToken {
   token: string;
   expires_at: string;
 }
 
-interface IApiUserAccount {
-  id: number;
-  email: string;
-  name: string;
-  token: string;
-  bets: IApiUserAccountBet[];
-}
+const tglBetsUserTokenStorageKey = "@tglBets:userToken";
 
-const tglBetsUserTokenKey = "@tglBets:userToken";
-
-let expirationTimer: NodeJS.Timeout;
+let expiryTime: NodeJS.Timeout;
 
 export const createNewUser = createAsyncThunk<
   void,
@@ -68,31 +68,26 @@ export const createNewUser = createAsyncThunk<
   try {
     const { data } = await api.post<IApiUser>("/user/create", newUser);
 
-    const createdNewUser = {
+    const { token, expires_at } = data.token;
+    const formattedNewUser = {
       user: {
         id: data.user.id,
         name: data.user.name,
         email: data.user.email,
       },
       token: {
-        token: data.token.token,
-        expires_at: data.token.expires_at,
+        token,
+        expires_at,
       },
     };
 
-    thunkApi.dispatch(authenticate(createdNewUser));
-    saveUserToStorage(createdNewUser.token);
-    api.defaults.headers.common = {
-      Authorization: `Bearer ${createdNewUser.token.token}`,
-    };
-
-    const currentTime = parseISO(new Date().toISOString()).getTime();
-    const expirationAtTime = parseISO(
-      createdNewUser.token.expires_at
-    ).getTime();
-    const expirationTime = expirationAtTime - currentTime;
+    const expirationTime = getExpirationTime(expires_at);
 
     thunkApi.dispatch(setLogoutTimer(expirationTime));
+    thunkApi.dispatch(authenticate(formattedNewUser));
+
+    saveUserTokenToStorage({ token, expires_at });
+    setUserTokenToApiService(token);
   } catch (error) {
     let errorMessage = "Something went wrong, please contact our support!";
 
@@ -112,27 +107,28 @@ export const updateUserData = createAsyncThunk<
   IAsyncThunkConfig
 >("@auth/updateUser", async (updatedUser, thunkApi) => {
   try {
-    const { data } = await api.put<IUpdatedUserApi>(
+    const { data } = await api.put<IUpdatedUserApiResponse>(
       "/user/update",
       updatedUser
     );
 
-    const currentAuthentication = thunkApi.getState().auth;
+    const { user, token, expiresAt } = thunkApi.getState().auth;
+    if (!user || !token || !expiresAt) return;
 
     const updatedAuthenticatedUser = {
       user: {
-        id: currentAuthentication.user!.id,
+        id: user.id,
         name: data.name,
         email: data.email,
       },
       token: {
-        token: currentAuthentication.token!,
-        expires_at: currentAuthentication.expiresAt!,
+        token,
+        expires_at: expiresAt,
       },
     };
 
     thunkApi.dispatch(authenticate(updatedAuthenticatedUser));
-    saveUserToStorage(updatedAuthenticatedUser.token);
+    saveUserTokenToStorage({ token, expires_at: expiresAt });
   } catch (error) {
     let errorMessage = "Something went wrong, please contact our support!";
 
@@ -152,29 +148,26 @@ export const loginUser = createAsyncThunk<void, ILoginData, IAsyncThunkConfig>(
     try {
       const { data } = await api.post<IApiUser>("/login", loginData);
 
-      const userData = {
+      const { token, expires_at } = data.token;
+      const user = {
         user: {
           id: data.user.id,
           name: data.user.name,
           email: data.user.email,
         },
         token: {
-          token: data.token.token,
-          expires_at: data.token.expires_at,
+          token,
+          expires_at,
         },
       };
 
-      thunkApi.dispatch(authenticate(userData));
-      saveUserToStorage(userData.token);
-      api.defaults.headers.common = {
-        Authorization: `Bearer ${userData.token.token}`,
-      };
-
-      const currentTime = parseISO(new Date().toISOString()).getTime();
-      const expirationAtTime = parseISO(userData.token.expires_at).getTime();
-      const expirationTime = expirationAtTime - currentTime;
+      const expirationTime = getExpirationTime(expires_at);
 
       thunkApi.dispatch(setLogoutTimer(expirationTime));
+      thunkApi.dispatch(authenticate(user));
+
+      saveUserTokenToStorage({ token, expires_at });
+      setUserTokenToApiService(token);
     } catch (error: any) {
       let errorMessage = "Something went wrong, please contact our support!";
 
@@ -193,71 +186,84 @@ export const loadUserStorageData = createAsyncThunk<
   void,
   IAsyncThunkConfig
 >("@auth/loadUserStorageData", async (_, thunkApi) => {
-  const storageUserToken = await AsyncStorage.getItem(tglBetsUserTokenKey);
+  const storageUserTokenData = await AsyncStorage.getItem(
+    tglBetsUserTokenStorageKey
+  );
+  if (!storageUserTokenData) throw new Error("");
 
-  if (!storageUserToken) throw new Error("");
+  const tokenData = JSON.parse(storageUserTokenData) as IToken;
 
-  const storageData = JSON.parse(storageUserToken) as IToken;
+  setUserTokenToApiService(tokenData.token);
 
-  api.defaults.headers.common = {
-    Authorization: `Bearer ${storageData.token}`,
-  };
-
-  const { data } = await api.get<IApiUserAccount>("/user/my-account");
-
+  const { data } = await api.get<IUserAccountApiResponse>("/user/my-account");
   const user: IApiUser = {
     user: {
       id: data.id,
       name: data.name,
       email: data.email,
     },
-    token: storageData,
+    token: tokenData,
   };
 
-  thunkApi.dispatch(authenticate(user));
-  saveUserToStorage(user.token);
-
-  const currentTime = parseISO(new Date().toISOString()).getTime();
-  const expirationAtTime = parseISO(user.token.expires_at).getTime();
-  const expirationTime = expirationAtTime - currentTime;
+  const expirationTime = getExpirationTime(tokenData.expires_at);
 
   thunkApi.dispatch(setLogoutTimer(expirationTime));
-  return;
+  thunkApi.dispatch(authenticate(user));
+
+  saveUserTokenToStorage(tokenData);
 });
 
 export const logoutUser = createAsyncThunk<void, void, IAsyncThunkConfig>(
   "@auth/logoutUser",
   async (_, thunkApi) => {
-    api.defaults.headers.common = {
-      Authorization: "",
-    };
-
     thunkApi.dispatch(logout());
     thunkApi.dispatch(clearCart());
     thunkApi.dispatch(clearBets());
     thunkApi.dispatch(clearGames());
-    removeUserFromStorage();
+
     clearLogoutTimer();
+    removeUserTokenFromStorage();
+    removeUserTokenFromApiService();
   }
 );
 
 const setLogoutTimer = createAsyncThunk<void, number, IAsyncThunkConfig>(
-  "@auto/setLogoutTimer",
-  async (expirationTime, thunkApi) => {
-    expirationTimer = setTimeout(() => {
+  "@auth/setLogoutTimer",
+  async (timeoutValue, thunkApi) => {
+    expiryTime = setTimeout(() => {
       thunkApi.dispatch(logoutUser());
-    }, expirationTime);
+    }, timeoutValue);
   }
 );
 
 function clearLogoutTimer() {
-  if (expirationTimer) clearTimeout(expirationTimer);
+  if (expiryTime) clearTimeout(expiryTime);
 }
 
-function saveUserToStorage(token: IToken) {
-  AsyncStorage.setItem(tglBetsUserTokenKey, JSON.stringify(token));
+function saveUserTokenToStorage(token: IToken) {
+  AsyncStorage.setItem(tglBetsUserTokenStorageKey, JSON.stringify(token));
 }
 
-function removeUserFromStorage() {
-  AsyncStorage.removeItem(tglBetsUserTokenKey);
+function removeUserTokenFromStorage() {
+  AsyncStorage.removeItem(tglBetsUserTokenStorageKey);
+}
+
+function setUserTokenToApiService(token: string) {
+  api.defaults.headers.common = {
+    Authorization: `Bearer ${token}`,
+  };
+}
+
+function removeUserTokenFromApiService() {
+  api.defaults.headers.common = {
+    Authorization: "",
+  };
+}
+
+function getExpirationTime(expiresAt: string) {
+  const currentDateIsoString = new Date().toISOString();
+  const currentDateTime = parseISO(currentDateIsoString).getTime();
+  const expirationAtDateTime = parseISO(expiresAt).getTime();
+
+  return expirationAtDateTime - currentDateTime;
 }
