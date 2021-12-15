@@ -86,7 +86,6 @@ export const createNewUser = createAsyncThunk<
     thunkApi.dispatch(authenticate(formattedNewUser));
 
     saveUserTokenToStorage({ token, expires_at });
-    setUserTokenToApiService(token);
   } catch (error) {
     let errorMessage = "Something went wrong, please contact our support!";
 
@@ -166,7 +165,6 @@ export const loginUser = createAsyncThunk<void, ILoginData, IAsyncThunkConfig>(
       thunkApi.dispatch(authenticate(user));
 
       saveUserTokenToStorage({ token, expires_at });
-      setUserTokenToApiService(token);
     } catch (error: any) {
       let errorMessage = "Something went wrong, please contact our support!";
 
@@ -191,8 +189,6 @@ export const loadUserStorageData = createAsyncThunk<
   if (!storageUserTokenData) throw new Error("");
 
   const tokenData = JSON.parse(storageUserTokenData) as IToken;
-
-  setUserTokenToApiService(tokenData.token);
 
   const { data } = await api.get<IUserAccountApiResponse>("/user/my-account");
   const user: IApiUser = {
@@ -222,7 +218,6 @@ export const logoutUser = createAsyncThunk<void, void, IAsyncThunkConfig>(
 
     clearLogoutTimer();
     removeUserTokenFromStorage();
-    removeUserTokenFromApiService();
   }
 );
 
@@ -245,18 +240,6 @@ function saveUserTokenToStorage(token: IToken) {
 
 function removeUserTokenFromStorage() {
   AsyncStorage.removeItem(tglBetsUserTokenStorageKey);
-}
-
-function setUserTokenToApiService(token: string) {
-  api.defaults.headers.common = {
-    Authorization: `Bearer ${token}`,
-  };
-}
-
-function removeUserTokenFromApiService() {
-  api.defaults.headers.common = {
-    Authorization: "",
-  };
 }
 
 function getExpirationTime(expiresAt: string) {
