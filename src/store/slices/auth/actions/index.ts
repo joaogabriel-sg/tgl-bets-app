@@ -1,59 +1,27 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios, { AxiosError } from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { parseISO } from "date-fns";
 
-import { api } from "@shared/services";
-import { IAsyncThunkConfig } from "@shared/types";
+import {
+  IAsyncThunkConfig,
+  ILoginData,
+  INewUser,
+  IToken,
+  IUpdatedUser,
+} from "@shared/types";
 
-import { authenticate, IApiUser, logout } from "..";
+import { loginUserService } from "@shared/services/api/auth";
+import {
+  createUserService,
+  myAccountService,
+  updateMyUserService,
+} from "@shared/services/api/user";
+
+import { authenticate, logout } from "..";
 
 import { clearCart } from "@store/slices/cart";
 import { clearBets } from "@store/slices/bets";
 import { clearGames } from "@store/slices/games";
-
-interface ILoginData {
-  email: string;
-  password: string;
-}
-
-interface INewUser {
-  name: string;
-  email: string;
-  password: string;
-}
-
-interface IUpdatedUser {
-  name: string;
-  email: string;
-}
-
-interface IUpdatedUserApiResponse {
-  name: string;
-  email: string;
-}
-
-interface IUserAccountBetApiResponse {
-  id: number;
-  choosen_numbers: string;
-  user_id: number;
-  game_id: number;
-  price: number;
-  created_at: string;
-}
-
-interface IUserAccountApiResponse {
-  id: number;
-  email: string;
-  name: string;
-  token: string;
-  bets: IUserAccountBetApiResponse[];
-}
-
-interface IToken {
-  token: string;
-  expires_at: string;
-}
 
 const tglBetsUserTokenStorageKey = "@tglBets:userToken";
 
@@ -65,37 +33,17 @@ export const createNewUser = createAsyncThunk<
   IAsyncThunkConfig
 >("@auth/createNewUser", async (newUser, thunkApi) => {
   try {
-    const { data } = await api.post<IApiUser>("/user/create", newUser);
+    const userData = await createUserService(newUser);
 
-    const { token, expires_at } = data.token;
-    const formattedNewUser = {
-      user: {
-        id: data.user.id,
-        name: data.user.name,
-        email: data.user.email,
-      },
-      token: {
-        token,
-        expires_at,
-      },
-    };
-
+    const { token, expires_at } = userData.token;
     const expirationTime = getExpirationTime(expires_at);
 
     thunkApi.dispatch(setLogoutTimer(expirationTime));
-    thunkApi.dispatch(authenticate(formattedNewUser));
+    thunkApi.dispatch(authenticate(userData));
 
     saveUserTokenToStorage({ token, expires_at });
-  } catch (error) {
-    let errorMessage = "Something went wrong, please contact our support!";
-
-    if (axios.isAxiosError(error)) {
-      const serverError = error as AxiosError;
-      if (serverError && serverError.response)
-        errorMessage = serverError.response.data.error.message as string;
-    }
-
-    throw new Error(errorMessage);
+  } catch (error: any) {
+    throw new Error(error);
   }
 });
 
@@ -105,38 +53,13 @@ export const updateUserData = createAsyncThunk<
   IAsyncThunkConfig
 >("@auth/updateUser", async (updatedUser, thunkApi) => {
   try {
-    const { data } = await api.put<IUpdatedUserApiResponse>(
-      "/user/update",
-      updatedUser
-    );
+    const user = await updateMyUserService(updatedUser);
+    const { token, expires_at } = user.token;
 
-    const { user, token, expiresAt } = thunkApi.getState().auth;
-    if (!user || !token || !expiresAt) return;
-
-    const updatedAuthenticatedUser = {
-      user: {
-        id: user.id,
-        name: data.name,
-        email: data.email,
-      },
-      token: {
-        token,
-        expires_at: expiresAt,
-      },
-    };
-
-    thunkApi.dispatch(authenticate(updatedAuthenticatedUser));
-    saveUserTokenToStorage({ token, expires_at: expiresAt });
-  } catch (error) {
-    let errorMessage = "Something went wrong, please contact our support!";
-
-    if (axios.isAxiosError(error)) {
-      const serverError = error as AxiosError;
-      if (serverError && serverError.response)
-        errorMessage = serverError.response.data.errors[0].message as string;
-    }
-
-    throw new Error(errorMessage);
+    thunkApi.dispatch(authenticate(user));
+    saveUserTokenToStorage({ token, expires_at });
+  } catch (error: any) {
+    throw new Error(error);
   }
 });
 
@@ -144,20 +67,8 @@ export const loginUser = createAsyncThunk<void, ILoginData, IAsyncThunkConfig>(
   "@auth/loginUser",
   async (loginData, thunkApi) => {
     try {
-      const { data } = await api.post<IApiUser>("/login", loginData);
-
-      const { token, expires_at } = data.token;
-      const user = {
-        user: {
-          id: data.user.id,
-          name: data.user.name,
-          email: data.user.email,
-        },
-        token: {
-          token,
-          expires_at,
-        },
-      };
+      const user = await loginUserService(loginData);
+      const { token, expires_at } = user.token;
 
       const expirationTime = getExpirationTime(expires_at);
 
@@ -166,14 +77,7 @@ export const loginUser = createAsyncThunk<void, ILoginData, IAsyncThunkConfig>(
 
       saveUserTokenToStorage({ token, expires_at });
     } catch (error: any) {
-      let errorMessage = "Something went wrong, please contact our support!";
-
-      if (axios.isAxiosError(error)) {
-        const serverError = error as AxiosError;
-        if (serverError && serverError.response && serverError.response.data)
-          errorMessage = serverError.response.data.message as string;
-      }
-      throw new Error(errorMessage);
+      throw new Error(error);
     }
   }
 );
@@ -183,29 +87,19 @@ export const loadUserStorageData = createAsyncThunk<
   void,
   IAsyncThunkConfig
 >("@auth/loadUserStorageData", async (_, thunkApi) => {
-  const storageUserTokenData = await AsyncStorage.getItem(
-    tglBetsUserTokenStorageKey
-  );
-  if (!storageUserTokenData) throw new Error("");
+  try {
+    const user = await myAccountService();
+    const { token, expires_at } = user.token;
 
-  const tokenData = JSON.parse(storageUserTokenData) as IToken;
+    const expirationTime = getExpirationTime(expires_at);
 
-  const { data } = await api.get<IUserAccountApiResponse>("/user/my-account");
-  const user: IApiUser = {
-    user: {
-      id: data.id,
-      name: data.name,
-      email: data.email,
-    },
-    token: tokenData,
-  };
+    thunkApi.dispatch(setLogoutTimer(expirationTime));
+    thunkApi.dispatch(authenticate(user));
 
-  const expirationTime = getExpirationTime(tokenData.expires_at);
-
-  thunkApi.dispatch(setLogoutTimer(expirationTime));
-  thunkApi.dispatch(authenticate(user));
-
-  saveUserTokenToStorage(tokenData);
+    saveUserTokenToStorage({ token, expires_at });
+  } catch (error: any) {
+    throw new Error(error);
+  }
 });
 
 export const logoutUser = createAsyncThunk<void, void, IAsyncThunkConfig>(
