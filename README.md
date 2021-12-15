@@ -29,9 +29,11 @@ yarn
 
 # 🔥 Usage
 
-<h3 style="font-size: 18px;">🧬 Clone and start TGL Bets API</h3>
+<h3 style="font-size: 18px;">🧬 Cloning and starting TGL Bets API</h3>
 
 ## [TGL Bets API](https://github.com/lubysoftware/LAB_TGL_API)
+
+After cloning and starting the TGL Bets API, copy the server address port and paste it into a `.env` file that follows the `.env.example`, in front of the colon to be able to use the server.
 
 <h3 style="font-size: 18px;">🤖 Running on Android</h3>
 
