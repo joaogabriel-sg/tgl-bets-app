@@ -15,8 +15,8 @@ import {
 
 import EmptyGamesSvg from "@shared/assets/empty-games.svg";
 
-import { api } from "@shared/services";
 import { useReduxDispatch, useReduxSelector } from "@shared/hooks";
+import { listBetsService } from "@shared/services/api/bets";
 import { IBet } from "@shared/types";
 
 import { fetchUserBets } from "@store/slices/bets/actions";
@@ -74,13 +74,7 @@ export function Home() {
   };
 
   async function fetchFilteredBets(types: string[]) {
-    const params = new URLSearchParams();
-    types.forEach((type) => params.append("type[]", type));
-
-    const { data: filteredBetsData } = await api.get<IBet[]>("/bet/all-bets", {
-      params,
-    });
-
+    const filteredBetsData = await listBetsService(types);
     const newFilteredBets = filteredBetsData.map(makeBetData);
 
     setFilteredBets(newFilteredBets);
