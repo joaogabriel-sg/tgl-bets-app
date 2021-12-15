@@ -3,10 +3,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { IToken } from "@shared/types";
 
+const { API_URL } = process.env;
+
 const tglBetsUserTokenStorageKey = "@tglBets:userToken";
 
 const api = axios.create({
-  baseURL: "http://10.0.2.2:43415",
+  baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
