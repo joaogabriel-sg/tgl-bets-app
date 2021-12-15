@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
 import { api } from "@shared/services";
 import { listGamesService } from "@shared/services/api/games";
@@ -33,14 +33,9 @@ export async function listBetsService(types?: string[]) {
 
     return allBets;
   } catch (error: any) {
-    let errorMessage = "Something went wrong, please contact our support!";
+    if (axios.isAxiosError(error) && error.response)
+      throw new Error(error.response.data.errors[0].message);
 
-    if (axios.isAxiosError(error)) {
-      const serverError = error as AxiosError;
-      if (serverError && serverError.response)
-        errorMessage = serverError.response.data.errors[0].message as string;
-    }
-
-    throw new Error(errorMessage);
+    throw new Error("Something went wrong, please contact our support!");
   }
 }

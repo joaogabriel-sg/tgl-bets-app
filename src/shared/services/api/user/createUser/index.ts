@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
 import { IApiUser } from "@store/slices/auth";
 
@@ -23,14 +23,9 @@ export async function createUserService(newUser: INewUser) {
 
     return user;
   } catch (error: any) {
-    let errorMessage = "Something went wrong, please contact our support!";
+    if (axios.isAxiosError(error) && error.response)
+      throw new Error(error.response.data.error.message);
 
-    if (axios.isAxiosError(error)) {
-      const serverError = error as AxiosError;
-      if (serverError && serverError.response)
-        errorMessage = serverError.response.data.error.message as string;
-    }
-
-    throw new Error(errorMessage);
+    throw new Error("Something went wrong, please contact our support!");
   }
 }

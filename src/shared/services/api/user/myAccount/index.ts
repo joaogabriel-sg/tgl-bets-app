@@ -1,3 +1,4 @@
+import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { api } from "@shared/services";
@@ -29,6 +30,10 @@ export async function myAccountService() {
     return user;
   } catch (error: any) {
     AsyncStorage.removeItem(tglBetsUserTokenStorageKey);
-    throw new Error(error);
+
+    if (axios.isAxiosError(error) && error.response)
+      throw new Error(error.response.data.errors[0].message);
+
+    throw new Error("Something went wrong, please contact our support!");
   }
 }

@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
 import { api } from "@shared/services";
 import { ILoginData } from "@shared/types";
@@ -23,13 +23,9 @@ export async function loginUserService(loginData: ILoginData) {
 
     return user;
   } catch (error: any) {
-    let errorMessage = "Something went wrong, please contact our support!";
+    if (axios.isAxiosError(error) && error.response)
+      throw new Error(error.response.data.message);
 
-    if (axios.isAxiosError(error)) {
-      const serverError = error as AxiosError;
-      if (serverError && serverError.response && serverError.response.data)
-        errorMessage = serverError.response.data.message as string;
-    }
-    throw new Error(errorMessage);
+    throw new Error("Something went wrong, please contact our support!");
   }
 }
